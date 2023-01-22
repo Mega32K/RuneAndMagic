@@ -1,4 +1,4 @@
-package xclient.mega;
+package xclient.mega.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -12,6 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import xclient.mega.IScreenClick;
+import xclient.mega.Main;
 import xclient.mega.event.RenderEvent;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.type.RenderBm;
@@ -23,7 +25,7 @@ public class YScreen extends Screen implements IScreenClick {
     public static boolean display_players;
     public static Module<?> RETURN_LOCAL;
 
-    protected YScreen() {
+    public YScreen() {
         super(new TextComponent("Y Screen"));
     }
 

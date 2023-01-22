@@ -1,9 +1,10 @@
 package xclient.mega.mod.bigmodule;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import xclient.mega.Main;
-import xclient.mega.XScreen;
+import xclient.mega.screen.XScreen;
 import xclient.mega.mod.Module;
 import xclient.mega.utils.RainbowFont;
 import xclient.mega.utils.Render2DUtil;
@@ -40,9 +41,11 @@ public abstract class ActionBmC extends BigModuleBase {
         y_ += 11;
         if (pushed) {
             for (Module<?> module : Module.every) {
-                if (module.sameBm(this)) {
+                if (module.sameBm(this) && module.getFather() == null) {
                     module.render(stack, x, y_, XScreen.isInRange(module, XScreen.mouseX, XScreen.mouseY));
                     y_ += 11;
+                    if (y > Minecraft.getInstance().getWindow().getScreenHeight() - 50)
+                        x += 130;
                 }
             }
         }

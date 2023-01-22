@@ -1,24 +1,27 @@
 package xclient.mega;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,21 +36,26 @@ import xclient.mega.mod.Module;
 import xclient.mega.mod.ModuleManager;
 import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.mod.bigmodule.type.KeyDisplayBM;
+import xclient.mega.screen.XScreen;
+import xclient.mega.screen.YScreen;
 import xclient.mega.utils.RainbowFont;
 import xclient.mega.utils.RendererUtils;
 import xclient.mega.utils.TimeHelper;
-import xclient.mega.utils.Vec2d;
 
+import javax.annotation.Nullable;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Mod("x_client")
+@Mod(Main.ID)
 public class Main {
-    public static String version = "V1.2.1";
+    public static String version = "V1.2.2";
+    public static final String ID = "x_client";
     public static boolean hasRead;
+    public static String YES = "\u221a";
 
     public static Saver<Integer> GAMMA;
     public static TimeHelper base_timehelper;
@@ -103,6 +111,8 @@ public class Main {
     public static boolean auto_release;
     @ModuleValue
     public static boolean arrow_dodge;
+    @ModuleValue
+    public static float air_jump_speed = 1;
 
     public static Module<?> CLIENT;
     public static Module<Boolean> AUTO_ATTACK;
@@ -124,9 +134,13 @@ public class Main {
     public static Module<Boolean> AIR_JUMP;
     public static Module<Boolean> AUTO_RELEASE;
     public static Module<Boolean> ARROW_DODGE;
+    public static Module<Float> SPEED;
+
 
     public static Module<Float> SUPER_KILL_AURA$RANGE;
     public static Module<Boolean> SUPER_KILL_AURA$ATTACK_PLAYER;
+
+    public static Module<Float> AIR_JUMP$SPEED;
 
     public static List<Module<Component>> PLAYER_CAMERA;
 
@@ -198,19 +212,19 @@ public class Main {
             BmMain.MISC.setPos(0, 44);
         });
         AUTO_ATTACK = new Module<>("Auto Attack", auto_attack, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> auto_attack = !auto_attack));
-        SUPER_KILL_AURA = new Module<>("Super KillAura", superKillAura, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> superKillAura = !superKillAura)).setRight(d -> killaura_displayInfo = !killaura_displayInfo);
         SUPER_KILL_AURA$RANGE = new Module<>("KillAura Range", killaura_range, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_range += 0.5F)).setRight(d -> {
-            if (killaura_range > 0)
+            if (killaura_range >= 0.1F)
                 killaura_range -= 0.1F;
         }).setFather(SUPER_KILL_AURA);
-        SUPER_KILL_AURA$ATTACK_PLAYER = new Module<>("KillAura AttackPlayer", killaura_attackPlayer, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_attackPlayer = !killaura_attackPlayer))
-                .setFather(SUPER_KILL_AURA);
+        SUPER_KILL_AURA$ATTACK_PLAYER = new Module<>("KillAura AttackPlayer", killaura_attackPlayer, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_attackPlayer = !killaura_attackPlayer)).setFather(SUPER_KILL_AURA);
+        SUPER_KILL_AURA = new Module<>("Super KillAura", superKillAura, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> superKillAura = !superKillAura)).addChild(SUPER_KILL_AURA$RANGE, SUPER_KILL_AURA$ATTACK_PLAYER);
         QUICKLY_BOW = new Module<>("Quickly Bow", quickly_bow, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> quickly_bow = !quickly_bow);
         CRITICAL = new Module<>("Critical", critical, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> critical = !critical);
         ARROW_DODGE = new Module<>("Arrow Dodge", arrow_dodge, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> arrow_dodge = !arrow_dodge);
         AUTO_RELEASE = new Module<>("Auto Release", auto_release, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> auto_release = !auto_release);
 
-        AIR_JUMP = new Module<>("Air Jump", air_jump, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setLeft(d -> air_jump = !air_jump);
+        AIR_JUMP$SPEED = new Module<>("Air Jump Speed", air_jump_speed, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setLeft(d -> air_jump_speed += 0.1F).setRight(d -> air_jump_speed -= 0.1).setFather(AIR_JUMP);
+        AIR_JUMP = new Module<>("Air Jump", air_jump, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setLeft(d -> air_jump = !air_jump).addChild(AIR_JUMP$SPEED);
         FLY = new Module<>("Fly", fly, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setLeft((d -> {
             fly = !fly;
             Minecraft mc = Minecraft.getInstance();
@@ -248,7 +262,7 @@ public class Main {
     }
 
     @Mod.EventBusSubscriber
-    public static class PlayerEvents {
+    public static class ShaderEvents {
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT)

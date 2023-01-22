@@ -1,7 +1,7 @@
 package xclient.mega.mod.bigmodule;
 
 import xclient.mega.Main;
-import xclient.mega.XScreen;
+import xclient.mega.screen.XScreen;
 import xclient.mega.utils.Vec2d;
 
 public interface ActionBm {

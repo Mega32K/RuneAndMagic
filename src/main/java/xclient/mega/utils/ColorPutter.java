@@ -2,6 +2,7 @@ package xclient.mega.utils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraftforge.registries.DeferredRegister;
 
 public class ColorPutter {
     public static final ChatFormatting[] Rainbow = new ChatFormatting[]{ChatFormatting.RED, ChatFormatting.GOLD, ChatFormatting.YELLOW, ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.BLUE, ChatFormatting.LIGHT_PURPLE};
@@ -18,6 +19,11 @@ public class ColorPutter {
         return Builder.toString();
     }
 
+    /*
+        public String getName() {
+            return ColorPutter.rainbow("name");
+        }
+     */
     public static String rainbow(String Input) {
         return Format(Input, Rainbow, 80.0D, 1);
     }

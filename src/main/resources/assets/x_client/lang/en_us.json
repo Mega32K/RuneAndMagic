@@ -108,5 +108,7 @@
   "arrow_dodge" : "Arrow Dodge",
   "auto_release" : "Auto Release",
   "air_jump" : "Super Jump",
-  "disable_negativeeffect_rendering" : "Disable NegativeEffect Rendering"
+  "disable_negativeeffect_rendering" : "Disable NegativeEffect Rendering",
+  "speed" : "Speed",
+  "air_jump_speed" : "AirJump Speed"
 }

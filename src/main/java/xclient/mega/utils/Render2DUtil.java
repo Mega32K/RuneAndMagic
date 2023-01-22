@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import xclient.mega.Main;
-import xclient.mega.XScreen;
 
 import java.awt.*;
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -34,14 +35,10 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import the_fireplace.ias.gui.AccountListScreen;
 import xclient.mega.Config;
 import xclient.mega.Main;
 import xclient.mega.button.ModuleButton;
-import xclient.mega.utils.RainbowFont;
-import xclient.mega.utils.Render2DUtil;
-import xclient.mega.utils.RendererUtils;
-import xclient.mega.utils.Textures;
+import xclient.mega.utils.*;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -96,21 +93,6 @@ public abstract class TitleScreenMixin extends Screen {
                 Textures.background = 1;
             System.out.println(Textures.background);
         }));
-        File mods = new File("mods");
-        File[] mods_ = Objects.<File[]>requireNonNull(mods.listFiles());
-        for (File file : mods_) {
-            if (!file.isDirectory()) {
-                String name = file.getName();
-                name = name.toLowerCase();
-                if (name.endsWith(".jar")) {
-                    if (name.contains("accountswitcher")) {
-                        addRenderableWidget(new ModuleButton(this.width - 20, this.height - 40, 20, 20, new TextComponent("S"), (b) -> {
-                            minecraft.setScreen(new AccountListScreen(this));
-                    }));
-                    }
-                }
-            }
-        }
         Textures.background = Config.background.get();
     }
 
@@ -260,21 +242,15 @@ public abstract class TitleScreenMixin extends Screen {
         ci.cancel();
     }
 
-    public final void init(Minecraft p_96607_, int p_96608_, int p_96609_) {
-        this.minecraft = p_96607_;
-        this.itemRenderer = p_96607_.getItemRenderer();
-        this.font = p_96607_.font;
-        this.width = p_96608_;
-        this.height = p_96609_;
-        java.util.function.Consumer<GuiEventListener> add = (b) -> {
-            if (b instanceof Widget w)
-                this.renderables.add(w);
-            if (b instanceof NarratableEntry ne)
-                this.narratables.add(ne);
-            children.add(b);
-        };  this.clearWidgets();
-            this.setFocused((GuiEventListener)null);
-            this.init();
-            this.triggerImmediateNarration(false);
+    public void init(Minecraft mc, int x, int y) {
+        super.init(mc, x, y);
+        for (Widget widget : renderables) {
+            if (widget instanceof ImageButton ibm) {
+                ibm.x = width - 20;
+                ibm.y = height - 20;
+                ibm.setWidth(20);
+                ibm.setHeight(20);
+            }
         }
+    }
 }

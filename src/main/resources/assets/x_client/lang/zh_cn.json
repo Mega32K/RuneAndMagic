@@ -104,5 +104,7 @@
   "arrow_dodge" : "弓箭闪避",
   "auto_release" : "自动射箭",
   "air_jump" : "月步",
-  "disable_negativeeffect_rendering" : "禁用负面效果渲染"
+  "disable_negativeeffect_rendering" : "禁用负面效果渲染",
+  "speed" : "速度",
+  "air_jump_speed" : "月步 速度"
 }

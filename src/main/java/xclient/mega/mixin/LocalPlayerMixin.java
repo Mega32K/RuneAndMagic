@@ -53,7 +53,17 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @Inject(method = "hurt", at = @At("HEAD"))
     public void hurt_b(DamageSource p_108662_, float p_108663_, CallbackInfoReturnable<Boolean> c) {
         if (p_108662_.isProjectile() && Main.arrow_dodge) {
-            Vec3 vec3 = new Vec3(4, 0, 4);
+            double d1 = Math.random() * 5 - 2.5;
+            double d2 = Math.random() * 5 - 2.5;
+            if (d1 <= 0)
+                d1 -= 2;
+            if (d1 > 0)
+                d1 += 2;
+            if (d2 <= 0)
+                d2 -= 2;
+            if (d2 > 0)
+                d2 += 2;
+            Vec3 vec3 = new Vec3(d1, 0, d2);
             connection.send(new ServerboundMovePlayerPacket.Pos(getX() + vec3.x, getY() + vec3.y, getZ() + vec3.z, false));
             setPos(getX() + vec3.x, getY() + vec3.y, getZ() + vec3.z);
         }
@@ -87,9 +97,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
         if (Main.air_jump) {
             if (minecraft.options.keyJump.consumeClick() && minecraft.options.keyJump.isDown()) {
                 if (getDeltaMovement().y <= 0.05) {
-                    if (minecraft.options.keyUp.consumeClick() || minecraft.options.keyUp.isDown())
-                        setDeltaMovement(getLookAngle().x * 2, getLookAngle().y * 2 , getLookAngle().z * 2);
-                    else setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y+2, getDeltaMovement().z);
+                    if (minecraft.options.keyUp.isDown())
+                        setDeltaMovement(getLookAngle().x * Main.air_jump_speed, getLookAngle().y * Main.air_jump_speed , getLookAngle().z * Main.air_jump_speed);
+                    else setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y+Main.air_jump_speed+0.5F, getDeltaMovement().z);
 
                     PU pu = new PU(level, ParticleTypes.DRAGON_BREATH, getX(), getY(), getZ());
                     pu.spawnHorizontalCircle(0.1, 1);

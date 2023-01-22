@@ -19,6 +19,7 @@ import xclient.mega.utils.XSynchedEntityData;
 
 @Mixin(value = ForgeHooksClient.class, remap = false)
 public class FHCMixin {
+
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private static void drawScreen(Screen screen, PoseStack poseStack, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (screen instanceof DeathScreen && Main.respawn) {

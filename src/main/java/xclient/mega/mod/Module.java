@@ -10,14 +10,14 @@ import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.utils.ColorPutter;
 import xclient.mega.utils.Render2DUtil;
 import xclient.mega.utils.RendererUtils;
+import xclient.mega.utils.Vec2d;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class Module<T> {
+
     public static List<Module<?>> every = new ArrayList<>();
     public Minecraft mc;
     public T value;
@@ -30,6 +30,7 @@ public class Module<T> {
     public int width;
     public int height;
     public boolean enableColorPutter;
+    public boolean hasChildren;
     public Module<?> FatherModule = null;
     public Set<Module<?>> children = new HashSet<>();
     private String name;
@@ -47,6 +48,10 @@ public class Module<T> {
 
     public Module(String name, T value, boolean enableColorPutter) {
         this(name, value, enableColorPutter, Minecraft.getInstance().font);
+    }
+
+    public boolean sameModule(Module<?> m) {
+        return m.getName().equals(getName());
     }
 
     public Module(String name, T value) {
@@ -92,7 +97,7 @@ public class Module<T> {
 
     }
 
-    public void right() {
+    public void right()  {
         if (right != null)
             right.run(this);
         else System.out.println(getName() + " right module is NULL!");
@@ -115,6 +120,8 @@ public class Module<T> {
     public String getInfo() {
         if (value instanceof Component component)
             return getName() + (value != null ? ":" + component.getString() : "");
+        if (value instanceof Boolean b)
+            return getName() + (value != null ? (b ? " " + Main.YES : "") : "");
         return getName() + (value != null ? ":" + value : "");
     }
 
@@ -133,6 +140,11 @@ public class Module<T> {
         return this;
     }
 
+    public void setPos(Vec2d value) {
+        x = value.x;
+        y = value.y;
+    }
+
     public void render(PoseStack stack, int x, int y, boolean isMouseOver) {
         if (value instanceof Float f)
             value = (T) Float.valueOf(String.format("%.2f", f));
@@ -149,13 +161,17 @@ public class Module<T> {
             height = font.lineHeight;
     }
 
-    public Module<?> addChild(Module<?> module) {
-        children.add(module);
+    public Module<T> addChild(Module<?>... modules) {
+        children.addAll(Arrays.asList(modules));
+        hasChildren = true;
         return this;
     }
 
-    public Module<?> removeChild(Module<?> module) {
-        children.remove(module);
+    public Module<T> removeChild(Module<?>... modules) {
+        for (Module<?> module : modules)
+            children.remove(module);
+        if (Arrays.asList(modules).get(1) == null)
+            hasChildren = false;
         return this;
     }
 
@@ -168,4 +184,7 @@ public class Module<T> {
         return this;
     }
 
+    public void setValueObj(Object o) {
+        value = (T)o;
+    }
 }

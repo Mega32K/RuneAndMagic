@@ -44,6 +44,7 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Boolean> air_jump;
     public static ForgeConfigSpec.ConfigValue<Boolean> auto_release;
     public static ForgeConfigSpec.ConfigValue<Boolean> arrow_dodge;
+    public static ForgeConfigSpec.ConfigValue<Float> air_jump_speed;
 
     public static ForgeConfigSpec.ConfigValue<Integer> key_x;
     public static ForgeConfigSpec.ConfigValue<Integer> key_y;
@@ -90,7 +91,7 @@ public class Config {
         air_jump = COMMON_BUILDER.define("air_jump", false);
         auto_release = COMMON_BUILDER.define("auto_release", false);
         arrow_dodge = COMMON_BUILDER.define("arrow_dodge", false);
-
+        air_jump_speed = COMMON_BUILDER.define("airjump speed", 1.0F);
         background = COMMON_BUILDER.define("background index", 1);
         key_x = COMMON_BUILDER.define("key x", 3);
         key_y = COMMON_BUILDER.define("key y", 70);

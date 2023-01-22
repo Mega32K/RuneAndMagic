@@ -3,6 +3,7 @@ package xclient.mega;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.ActionBmC;
 import xclient.mega.mod.bigmodule.BigModuleBase;
+import xclient.mega.screen.XScreen;
 
 public interface IScreenClick {
     default void click(double x, double y, int code) {

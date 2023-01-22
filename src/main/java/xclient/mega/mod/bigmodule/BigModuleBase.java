@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraftforge.common.MinecraftForge;
 import xclient.mega.Main;
-import xclient.mega.XScreen;
+import xclient.mega.screen.XScreen;
 import xclient.mega.utils.Render2DUtil;
 import xclient.mega.utils.RendererUtils;
 import xclient.mega.utils.TimeHelper;

@@ -15,8 +15,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xclient.mega.Main;
-import xclient.mega.YScreen;
+import xclient.mega.screen.YScreen;
 import xclient.mega.event.RenderEvent;
 
 import javax.annotation.Nullable;
@@ -108,6 +108,8 @@ public abstract class GameRendererMixin {
 
     @Shadow @Mutable
     private float zoom;
+
+    @Shadow public abstract void loadEffect(ResourceLocation p_109129_);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     private void hurtEffect(PoseStack p_109118_, float p_109119_, CallbackInfo ci) {
