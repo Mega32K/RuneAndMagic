@@ -25,7 +25,7 @@ public class Render2DUtil {
     }
 
     public static void renderBackground() {
-        drawRect(new PoseStack(), -1, -1, Minecraft.getInstance().getWindow().getGuiScaledWidth()+1, Minecraft.getInstance().getWindow().getGuiScaledHeight()+1, new Color(30, 30 ,30, Main.base_timehelper.integer_time).getRGB());
+        drawRect(new PoseStack(), -1, -1, Minecraft.getInstance().getWindow().getGuiScaledWidth() + 1, Minecraft.getInstance().getWindow().getGuiScaledHeight() + 1, new Color(30, 30, 30, Main.base_timehelper.integer_time).getRGB());
     }
 
     public static boolean isHovered(int mouseX, int mouseY, int x, int y, int width, int height) {
@@ -43,7 +43,7 @@ public class Render2DUtil {
     }
 
     public static void drawProgressBar(PoseStack p_96183_, int p_96184_, int p_96185_, int p_96186_, int p_96187_, float p_96188_, float progress) {
-        int i = Mth.ceil((float)(p_96186_ - p_96184_ - 2) * progress);
+        int i = Mth.ceil((float) (p_96186_ - p_96184_ - 2) * progress);
         int j = Math.round(p_96188_ * 255.0F);
         int k = FastColor.ARGB32.color(j, 180, 180, 180);
         GuiComponent.fill(p_96183_, p_96184_ + 2, p_96185_ + 2, p_96184_ + i, p_96187_ - 2, k);

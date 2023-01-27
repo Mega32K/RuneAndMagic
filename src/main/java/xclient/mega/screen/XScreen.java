@@ -10,7 +10,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import xclient.mega.BmMain;
-import xclient.mega.IScreenClick;
+import xclient.mega.mod.IScreenClick;
 import xclient.mega.Main;
 import xclient.mega.MegaUtil;
 import xclient.mega.mod.Module;
@@ -30,6 +30,7 @@ public class XScreen extends Screen implements IScreenClick {
     public static boolean z;
     public boolean isRenderingConfig;
     public Module<?> configModule;
+
     public XScreen() {
         super(new TextComponent(""));
     }
@@ -85,36 +86,36 @@ public class XScreen extends Screen implements IScreenClick {
                 }
             }
         } else
-        for (BigModuleBase bm : BmMain.CREATED) {
-            if (bm.isInRange_asModule())
-                bm.click(code);
-            for (Module<?> module : Module.every) {
-                if (module.getFather_Bm() instanceof ActionBmC actionBmC && actionBmC.pushed && module.getFather_Bm().getName().equals(bm.getName()))
-                    if (XScreen.isInRange(module, (int) x, (int) y)) {
-                        if (code == 0) {
-                            module.left();
-                        }
-                        if (code == 1) {
-                            if (module.hasChildren) {
-                                isRenderingConfig = true;
-                                configModule = module;
+            for (BigModuleBase bm : BmMain.CREATED) {
+                if (bm.isInRange_asModule())
+                    bm.click(code);
+                for (Module<?> module : Module.every) {
+                    if (module.getFather_Bm() instanceof ActionBmC actionBmC && actionBmC.pushed && module.getFather_Bm().getName().equals(bm.getName()))
+                        if (XScreen.isInRange(module, (int) x, (int) y)) {
+                            if (code == 0) {
+                                module.left();
                             }
-                            module.right();
+                            if (code == 1) {
+                                if (module.hasChildren) {
+                                    isRenderingConfig = true;
+                                    configModule = module;
+                                }
+                                module.right();
+                            }
                         }
-                    }
+                }
             }
-        }
         Main.setModules();
     }
 
     @Override
     public boolean mouseReleased(double p_94722_, double p_94723_, int p_94724_) {
         for (BigModuleBase bm : BigModuleBase.every) {
-            if (bm.isInRange_asModule()) 
+            if (bm.isInRange_asModule())
                 bm.release((int) p_94722_, (int) p_94723_);
         }
         Main.KEY_DISPLAY_BM.release((int) p_94722_, (int) p_94723_);
-        z=false;
+        z = false;
         return super.mouseReleased(p_94722_, p_94723_, p_94724_);
     }
 
@@ -122,13 +123,13 @@ public class XScreen extends Screen implements IScreenClick {
     public boolean mouseDragged(double p_94699_, double p_94700_, int p_94701_, double p_94702_, double p_94703_) {
         if (!z && Main.KEY_DISPLAY_BM.isInRange((int) p_94699_, (int) p_94700_, new Vec2d(Main._x_, Main._y_), new Vec2d(Main._x_ + 63, Main._y_ + 61))) {
             Main.KEY_DISPLAY_BM.startPress((int) p_94699_, (int) p_94700_);
-            z=true;
+            z = true;
         }
         for (BigModuleBase bm : BigModuleBase.every) {
-            if (bm.isInRange_asModule() || bm.isPressing ) {
+            if (bm.isInRange_asModule() || bm.isPressing) {
                 if (!z) {
                     bm.isPressing = true;
-                    z=true;
+                    z = true;
                 }
                 bm.update(bm);
             }
@@ -150,14 +151,14 @@ public class XScreen extends Screen implements IScreenClick {
         } else {
             minecraft = Minecraft.getInstance();
             drawCenteredString(stack, RainbowFont.INS, configModule.getName() + " Config", minecraft.getWindow().getGuiScaledWidth() / 2 - 5, 0, 0xFFFFFFFF);
-            int x=10,y=10;
-            Render2DUtil.drawRect(stack, x, y-3, 200, 120, new Color(0, 0, 0, 60).getRGB());
-            x+=8;
+            int x = 10, y = 10;
+            Render2DUtil.drawRect(stack, x, y - 3, 200, 120, new Color(0, 0, 0, 60).getRGB());
+            x += 8;
             for (Module<?> m : configModule.children) {
                 m.render(stack, x, y, XScreen.isInRange(m, mx, my));
-                y+=11;
+                y += 11;
                 if (y >= Minecraft.getInstance().getWindow().getScreenHeight() - 50)
-                    x+=130;
+                    x += 130;
             }
         }
         super.render(stack, mx, my, pt);

@@ -36,8 +36,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xclient.mega.Main;
+import xclient.mega.event.Render2DEvent;
 import xclient.mega.screen.YScreen;
-import xclient.mega.event.RenderEvent;
+import xclient.mega.utils.CameraCore;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -77,6 +78,9 @@ public abstract class GameRendererMixin {
     private RenderBuffers renderBuffers;
     @Shadow
     private boolean renderBlockOutline;
+    @Shadow
+    @Mutable
+    private float zoom;
 
     @Shadow
     protected abstract void tryTakeScreenshotIfNeeded();
@@ -89,7 +93,6 @@ public abstract class GameRendererMixin {
 
     @Shadow
     public abstract LightTexture lightTexture();
-
 
     @Shadow
     protected abstract double getFov(Camera p_109142_, float p_109143_, boolean p_109144_);
@@ -106,16 +109,21 @@ public abstract class GameRendererMixin {
     @Shadow
     public abstract void resetProjectionMatrix(Matrix4f p_109112_);
 
-    @Shadow @Mutable
-    private float zoom;
-
-    @Shadow public abstract void loadEffect(ResourceLocation p_109129_);
+    @Shadow
+    public abstract void loadEffect(ResourceLocation p_109129_);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     private void hurtEffect(PoseStack p_109118_, float p_109119_, CallbackInfo ci) {
         if (!Main.enableHurtEffect)
             ci.cancel();
 
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
+    public void renderItemInHand(PoseStack p_109121_, Camera p_109122_, float p_109123_, CallbackInfo ci) {
+        if (Main.enabledCameraGhost) {
+            ci.cancel();
+        }
     }
 
     /**
@@ -126,6 +134,33 @@ public abstract class GameRendererMixin {
     public void render(float p_109094_, long p_109095_, boolean p_109096_) {
         zoom = Main.zoom;
         minecraft.getWindow().setTitle("");
+        if (Main.enabledCameraGhost && minecraft.player != null && minecraft.level != null) {
+            if (minecraft.options.keyUp.isDown()) {
+                CameraCore.add(minecraft.player.getLookAngle().scale(.2D * Main.cameraGhostSpeed));
+            }
+
+            if (minecraft.options.keyDown.isDown()) {
+                CameraCore.add(minecraft.player.getLookAngle().scale(-.2D * Main.cameraGhostSpeed));
+            }
+
+            if (minecraft.options.keyLeft.isDown()) {
+                Vector3f v = new Vector3f(.1F * Main.cameraGhostSpeed, 0, 0);
+                v.transform(mainCamera.rotation());
+                CameraCore.add(new Vec3(v));
+            }
+
+            if (minecraft.options.keyRight.isDown()) {
+                Vector3f v = new Vector3f(-.1F * Main.cameraGhostSpeed, 0, 0);
+                v.transform(mainCamera.rotation());
+                CameraCore.add(new Vec3(v));
+            }
+            if (minecraft.options.keyJump.isDown()) {
+                CameraCore.add(0, 0.1 * Main.cameraGhostSpeed, 0);
+            }
+            if (minecraft.options.keyShift.isDown()) {
+                CameraCore.add(0, -0.1 * Main.cameraGhostSpeed, 0);
+            }
+        }
         if (!this.minecraft.isWindowActive() && this.minecraft.options.pauseOnLostFocus && (!this.minecraft.options.touchscreen || !this.minecraft.mouseHandler.isRightPressed())) {
             if (Util.getMillis() - this.lastActiveTime > 500L) {
                 this.minecraft.pauseGame(false);
@@ -176,7 +211,7 @@ public abstract class GameRendererMixin {
                 if (!this.minecraft.options.hideGui || this.minecraft.screen != null) {
                     this.renderItemActivationAnimation(this.minecraft.getWindow().getGuiScaledWidth(), this.minecraft.getWindow().getGuiScaledHeight(), p_109094_);
                     this.minecraft.gui.render(posestack1, p_109094_);
-                    MinecraftForge.EVENT_BUS.post(new RenderEvent());
+                    MinecraftForge.EVENT_BUS.post(new Render2DEvent());
                     RenderSystem.clear(256, Minecraft.ON_OSX);
                 }
 

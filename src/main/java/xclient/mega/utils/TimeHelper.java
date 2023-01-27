@@ -16,25 +16,27 @@ public class TimeHelper {
     public double double_time;
     public boolean integer_logic;
     public boolean double_logic;
+
     public TimeHelper(int min, int max) {
         min_i = min;
         max_i = max;
         MinecraftForge.EVENT_BUS.register(this);
     }
+
     public TimeHelper(double min, double max) {
         min_d = min;
         max_d = max;
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public static TimeHelper create(TimeHelper timeHelper, int min, int max) {
-        if (timeHelper == null)
-            return new  TimeHelper(min, max);
-        return timeHelper;
-    }
-
     public TimeHelper() {
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public static TimeHelper create(TimeHelper timeHelper, int min, int max) {
+        if (timeHelper == null)
+            return new TimeHelper(min, max);
+        return timeHelper;
     }
 
     public static long millis() {

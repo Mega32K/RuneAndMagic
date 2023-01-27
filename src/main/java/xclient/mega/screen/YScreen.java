@@ -12,9 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import xclient.mega.IScreenClick;
+import xclient.mega.mod.IScreenClick;
 import xclient.mega.Main;
-import xclient.mega.event.RenderEvent;
+import xclient.mega.event.Render2DEvent;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.type.RenderBm;
 import xclient.mega.utils.MegaUtil;
@@ -41,7 +41,7 @@ public class YScreen extends Screen implements IScreenClick {
     }
 
     @SubscribeEvent
-    public static void renderPlayerInfo(RenderEvent event) {
+    public static void renderPlayerInfo(Render2DEvent event) {
         if (display_players && !(Minecraft.getInstance().screen instanceof IScreenClick)) {
             Minecraft mc = Minecraft.getInstance();
             PoseStack stack = new PoseStack();

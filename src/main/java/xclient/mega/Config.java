@@ -45,9 +45,12 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Boolean> auto_release;
     public static ForgeConfigSpec.ConfigValue<Boolean> arrow_dodge;
     public static ForgeConfigSpec.ConfigValue<Float> air_jump_speed;
+    public static ForgeConfigSpec.ConfigValue<Float> time_speed;
+    public static ForgeConfigSpec.ConfigValue<Boolean> enabledCameraGhost;
+    public static ForgeConfigSpec.ConfigValue<Float> cameraGhostSpeed;
 
-    public static ForgeConfigSpec.ConfigValue<Integer> key_x;
-    public static ForgeConfigSpec.ConfigValue<Integer> key_y;
+    public static ForgeConfigSpec.ConfigValue<Integer> _x_;
+    public static ForgeConfigSpec.ConfigValue<Integer> _y_;
     public static ForgeConfigSpec.ConfigValue<Float> key_scale;
 
     static {
@@ -92,9 +95,12 @@ public class Config {
         auto_release = COMMON_BUILDER.define("auto_release", false);
         arrow_dodge = COMMON_BUILDER.define("arrow_dodge", false);
         air_jump_speed = COMMON_BUILDER.define("airjump speed", 1.0F);
+        time_speed = COMMON_BUILDER.define("time_speed", 20.0F);
+        enabledCameraGhost = COMMON_BUILDER.define("enabledCameraGhost", false);
+        cameraGhostSpeed = COMMON_BUILDER.define("cameraGhostSpeed", 1.0F);
         background = COMMON_BUILDER.define("background index", 1);
-        key_x = COMMON_BUILDER.define("key x", 3);
-        key_y = COMMON_BUILDER.define("key y", 70);
+        _x_ = COMMON_BUILDER.define("key x", 3);
+        _y_ = COMMON_BUILDER.define("key y", 70);
         key_scale = COMMON_BUILDER.define("key_scale", 1.0F);
         COMMON_BUILDER.pop();
         COMMON_CONFIG = COMMON_BUILDER.build();

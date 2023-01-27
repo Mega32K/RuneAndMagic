@@ -14,11 +14,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import xclient.mega.mod.ModuleValue;
 import xclient.mega.utils.Textures;
 
 import java.lang.reflect.Field;
@@ -237,19 +236,19 @@ public class MegaUtil {
                                 Object f_value = f.get(Main.class);
                                 Object f_inConfig_value = f_inConfig.get(Config.class);
                                 if (f_value instanceof Boolean v) {
-                                    ((ForgeConfigSpec.ConfigValue<Boolean>)f_inConfig_value).set(v);
+                                    ((ForgeConfigSpec.ConfigValue<Boolean>) f_inConfig_value).set(v);
                                 }
                                 if (f_value instanceof Integer v) {
-                                    ((ForgeConfigSpec.ConfigValue<Integer>)f_inConfig_value).set(v);
+                                    ((ForgeConfigSpec.ConfigValue<Integer>) f_inConfig_value).set(v);
                                 }
                                 if (f_value instanceof Float v) {
-                                    ((ForgeConfigSpec.ConfigValue<Float>)f_inConfig_value).set(v);
+                                    ((ForgeConfigSpec.ConfigValue<Float>) f_inConfig_value).set(v);
                                 }
                                 if (f_value instanceof Double v) {
-                                    ((ForgeConfigSpec.ConfigValue<Double>)f_inConfig_value).set(v);
+                                    ((ForgeConfigSpec.ConfigValue<Double>) f_inConfig_value).set(v);
                                 }
                                 if (f_value instanceof String v) {
-                                    ((ForgeConfigSpec.ConfigValue<String>)f_inConfig_value).set(v);
+                                    ((ForgeConfigSpec.ConfigValue<String>) f_inConfig_value).set(v);
                                 }
                             }
                         }
@@ -279,8 +278,8 @@ public class MegaUtil {
         set(Config.quickly_bow, Main.quickly_bow);
         */
         set(Config.background, Textures.background);
-        set(Config.key_x, Main._x_);
-        set(Config.key_y, Main._y_);
+        set(Config._x_, Main._x_);
+        set(Config._y_, Main._y_);
         set(Config.key_scale, Main.key_scale);
 
     }
@@ -305,7 +304,7 @@ public class MegaUtil {
                     for (Field f_inConfig : Config.class.getFields()) {
                         if (Modifier.isStatic(f_inConfig.getModifiers())) {
                             if (name.equals(f_inConfig.getName())) {
-                                f.set(Main.class, ((ForgeConfigSpec.ConfigValue<?>)f_inConfig.get(Config.class)).get());
+                                f.set(Main.class, ((ForgeConfigSpec.ConfigValue<?>) f_inConfig.get(Config.class)).get());
                             }
                         }
                     }
@@ -333,8 +332,8 @@ public class MegaUtil {
         Main.jumping = Config.jumping.get();
         Main.quickly_bow = Config.quickly_bow.get();
          */
-        Main._x_ = Config.key_x.get();
-        Main._y_ = Config.key_y.get();
+        Main._x_ = Config._x_.get();
+        Main._y_ = Config._y_.get();
         Main.key_scale = Config.key_scale.get();
         Textures.background = Config.background.get();
         Main.hasRead = true;

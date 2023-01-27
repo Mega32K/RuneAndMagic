@@ -7,11 +7,12 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.protocol.game.ServerboundChatPacket;
+import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -23,9 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xclient.mega.Main;
-import xclient.mega.Saver;
 import xclient.mega.utils.PU;
-import xclient.mega.utils.XSynchedEntityData;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer {
@@ -33,7 +32,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @Final
     public ClientPacketListener connection;
 
-    @Shadow @Final protected Minecraft minecraft;
+    @Shadow
+    @Final
+    protected Minecraft minecraft;
 
     public LocalPlayerMixin(ClientLevel p_108548_, GameProfile p_108549_) {
         super(p_108548_, p_108549_);
@@ -72,16 +73,12 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo c) {
         if (Main.respawn && deathTime > 0) {
-            SynchedEntityData date = new XSynchedEntityData(this, getEntityData());
-            date.set(LivingEntity.DATA_HEALTH_ID, 20F);
-            connection.handleSetEntityData(new ClientboundSetEntityDataPacket(getId(), date, false));
             connection.send(new ServerboundChatPacket("/back"));
             connection.send(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
             connection.send(new ServerboundChatPacket("/back"));
             deathTime = 0;
         }
-        if (Main.no_fall && fallDistance > 0.5F)
-            connection.send(new ServerboundMovePlayerPacket.StatusOnly(true));
+        if (Main.no_fall && fallDistance > 0.5F) connection.send(new ServerboundMovePlayerPacket.StatusOnly(true));
         if (Main.jumping) {
             minecraft.options.keyJump.setDown(true);
         }
@@ -98,17 +95,18 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
             if (minecraft.options.keyJump.consumeClick() && minecraft.options.keyJump.isDown()) {
                 if (getDeltaMovement().y <= 0.05) {
                     if (minecraft.options.keyUp.isDown())
-                        setDeltaMovement(getLookAngle().x * Main.air_jump_speed, getLookAngle().y * Main.air_jump_speed , getLookAngle().z * Main.air_jump_speed);
-                    else setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y+Main.air_jump_speed+0.5F, getDeltaMovement().z);
+                        setDeltaMovement(getLookAngle().x * Main.air_jump_speed, getLookAngle().y * Main.air_jump_speed, getLookAngle().z * Main.air_jump_speed);
+                    else
+                        setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y + Main.air_jump_speed + 0.5F, getDeltaMovement().z);
 
                     PU pu = new PU(level, ParticleTypes.DRAGON_BREATH, getX(), getY(), getZ());
                     pu.spawnHorizontalCircle(0.1, 1);
                 }
-            } if (minecraft.options.keyShift.consumeClick()) {
+            }
+            if (minecraft.options.keyShift.consumeClick()) {
                 if (level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).getY() > 6)
                     setDeltaMovement(getDeltaMovement().add(0, -2, 0));
             }
         }
-
-        }
+    }
 }

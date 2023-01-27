@@ -98,6 +98,9 @@ public abstract class GuiMixin extends GuiComponent {
     protected ChatComponent chat;
     @Shadow
     protected int tickCount;
+    @Shadow
+    @Final
+    protected ItemRenderer itemRenderer;
 
     @Shadow
     public abstract Font getFont();
@@ -113,6 +116,7 @@ public abstract class GuiMixin extends GuiComponent {
 
     @Shadow
     protected abstract void renderPortalOverlay(float p_93008_);
+
     @Shadow
     protected abstract void renderCrosshair(PoseStack p_93081_);
 
@@ -146,8 +150,8 @@ public abstract class GuiMixin extends GuiComponent {
     @Shadow
     protected abstract void renderSavingIndicator(PoseStack p_193835_);
 
-    @Shadow protected abstract Player getCameraPlayer();
-    @Shadow @Final protected ItemRenderer itemRenderer;
+    @Shadow
+    protected abstract Player getCameraPlayer();
 
     @Inject(method = "render", at = @At("RETURN"))
     private void clinit(CallbackInfo ci) {
@@ -372,6 +376,7 @@ public abstract class GuiMixin extends GuiComponent {
             minecraft.player.removeEffect(MobEffects.CONFUSION);
         }
     }
+
     /**
      * @author mega
      * @reason dner
@@ -380,13 +385,13 @@ public abstract class GuiMixin extends GuiComponent {
     private void renderSlot(int p_168678_, int p_168679_, float p_168680_, Player p_168681_, ItemStack p_168682_, int p_168683_) {
         if (!p_168682_.isEmpty()) {
             PoseStack posestack = RenderSystem.getModelViewStack();
-            float f = (float)p_168682_.getPopTime() - p_168680_;
+            float f = (float) p_168682_.getPopTime() - p_168680_;
             if (f > 0.0F) {
                 float f1 = 1.0F + f / 5.0F;
                 posestack.pushPose();
-                posestack.translate((double)(p_168678_ + 8), (double)(p_168679_ + 12), 0.0D);
+                posestack.translate(p_168678_ + 8, p_168679_ + 12, 0.0D);
                 posestack.scale(1.0F / f1, (f1 + 1.0F) / 2.0F, 1.0F);
-                posestack.translate((double)(-(p_168678_ + 8)), (double)(-(p_168679_ + 12)), 0.0D);
+                posestack.translate(-(p_168678_ + 8), -(p_168679_ + 12), 0.0D);
                 RenderSystem.applyModelViewMatrix();
             }
 
@@ -400,6 +405,7 @@ public abstract class GuiMixin extends GuiComponent {
             this.itemRenderer.renderGuiItemDecorations(this.minecraft.font, p_168682_, p_168678_, p_168679_);
         }
     }
+
     /**
      * @author mega
      * @reason dner
@@ -414,11 +420,11 @@ public abstract class GuiMixin extends GuiComponent {
             int j = this.getBlitOffset();
             this.setBlitOffset(-90);
             Color hotbarColor = new Color(0, 0, 0, 120);
-            Render2DUtil.drawRect(p_93011_, i - 91, this.screenHeight - 22,182, 22, hotbarColor.getRGB());
+            Render2DUtil.drawRect(p_93011_, i - 91, this.screenHeight - 22, 182, 22, hotbarColor.getRGB());
             Render2DUtil.drawRect(p_93011_, i - 91 + player.getInventory().selected * 20, this.screenHeight - 22, 22, 22, Color.PINK.getRGB());
             if (!itemstack.isEmpty()) {
                 if (humanoidarm == HumanoidArm.LEFT) {
-                    Render2DUtil.drawRect(p_93011_, i - 91 - 29, this.screenHeight - 23,26, 22, hotbarColor.getRGB());
+                    Render2DUtil.drawRect(p_93011_, i - 91 - 29, this.screenHeight - 23, 26, 22, hotbarColor.getRGB());
                 } else {
                     Render2DUtil.drawRect(p_93011_, i + 91, this.screenHeight - 23, 29, 24, hotbarColor.getRGB());
                 }
@@ -429,7 +435,7 @@ public abstract class GuiMixin extends GuiComponent {
             RenderSystem.defaultBlendFunc();
             int i1 = 1;
 
-            for(int j1 = 0; j1 < 9; ++j1) {
+            for (int j1 = 0; j1 < 9; ++j1) {
                 int k1 = i - 90 + j1 * 20 + 2;
                 int l1 = this.screenHeight - 16 - 3;
                 this.renderSlot(k1, l1, p_93010_, player, player.getInventory().items.get(j1), i1++);
@@ -454,7 +460,7 @@ public abstract class GuiMixin extends GuiComponent {
                     }
 
                     RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
-                    int i2 = (int)(f * 19.0F);
+                    int i2 = (int) (f * 19.0F);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                     this.blit(p_93011_, l2, k2, 0, 94, 18, 18);
                     this.blit(p_93011_, l2, k2 + 18 - i2, 18, 112 - i2, 18, i2);

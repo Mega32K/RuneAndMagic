@@ -1,14 +1,11 @@
 package xclient.mega.mixin;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ServerboundChatPacket;
-import net.minecraft.network.protocol.game.ServerboundPickItemPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -26,13 +23,13 @@ import xclient.mega.utils.XSynchedEntityData;
 @Mixin(AbstractClientPlayer.class)
 public abstract class AbstractClientPlayerMixin extends Player {
 
+    public AbstractClientPlayerMixin(Level p_36114_, BlockPos p_36115_, float p_36116_, GameProfile p_36117_) {
+        super(p_36114_, p_36115_, p_36116_, p_36117_);
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ClientLevel p_108548_, GameProfile p_108549_, CallbackInfo ci) {
         RenderBm.players.add(this);
-    }
-
-    public AbstractClientPlayerMixin(Level p_36114_, BlockPos p_36115_, float p_36116_, GameProfile p_36117_) {
-        super(p_36114_, p_36115_, p_36116_, p_36117_);
     }
 
     @Override
@@ -46,7 +43,7 @@ public abstract class AbstractClientPlayerMixin extends Player {
 
     @Override
     protected void tickDeath() {
-        if (((Object)this) instanceof LocalPlayer player) {
+        if (((Object) this) instanceof LocalPlayer player) {
             if (Main.respawn) {
                 SynchedEntityData date = new XSynchedEntityData(this, getEntityData());
                 date.set(LivingEntity.DATA_HEALTH_ID, 20F);

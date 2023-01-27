@@ -16,7 +16,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import xclient.mega.event.RenderEvent;
+import xclient.mega.event.Render2DEvent;
 
 import java.util.Random;
 
@@ -91,17 +91,19 @@ public class RendererUtils {
     public static void setup() {
         timeHelper = TimeHelper.create(timeHelper, 20, 170);
     }
+
     @Mod.EventBusSubscriber
     public static class Setup {
         public static int time = 0;
         public static int[] in = null;
+
         @SubscribeEvent
-        public static void setup(RenderEvent event) {
+        public static void setup(Render2DEvent event) {
             if (in == null) {
                 RendererUtils.setup();
                 in = new int[]{new Random().nextInt(114), new Random().nextInt(114), new Random().nextInt(114), new Random().nextInt(114)};
             }
-                time++;
+            time++;
             if (time == in[0])
                 R = TimeHelper.create(R, 1, 255);
             if (time == in[1])

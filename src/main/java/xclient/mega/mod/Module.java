@@ -7,14 +7,15 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import xclient.mega.Main;
 import xclient.mega.mod.bigmodule.BigModuleBase;
+import xclient.mega.mod.message.Message;
 import xclient.mega.utils.ColorPutter;
 import xclient.mega.utils.Render2DUtil;
 import xclient.mega.utils.RendererUtils;
 import xclient.mega.utils.Vec2d;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class Module<T> {
 
@@ -50,8 +51,10 @@ public class Module<T> {
         this(name, value, enableColorPutter, Minecraft.getInstance().font);
     }
 
-    public boolean sameModule(Module<?> m) {
-        return m.getName().equals(getName());
+    @Override
+    public String toString() {
+        return "Module{" + getInfo()+
+                '}';
     }
 
     public Module(String name, T value) {
@@ -60,6 +63,10 @@ public class Module<T> {
 
     public Module(String name) {
         this(name, null);
+    }
+
+    public boolean sameModule(Module<?> m) {
+        return m.getName().equals(getName());
     }
 
     public Module<T> setLeft(ModuleTodo left) {
@@ -94,18 +101,18 @@ public class Module<T> {
         if (left != null) {
             left.run(this);
         } else System.out.println(getName() + " left module is NULL!");
-
+        Message.sendMessage(this);
     }
 
-    public void right()  {
-        if (right != null)
+    public void right() {
+        if (right != null) {
             right.run(this);
-        else System.out.println(getName() + " right module is NULL!");
-
+        } else System.out.println(getName() + " right module is NULL!");
+        Message.sendMessage(this);
     }
 
     public String getName() {
-        return enableColorPutter ? ColorPutter.rainbow(I18n.get(name.toLowerCase().replaceAll(" ","_"))) : I18n.get(name.toLowerCase().replaceAll(" ","_"));
+        return enableColorPutter ? ColorPutter.rainbow(I18n.get(name.toLowerCase().replaceAll(" ", "_"))) : I18n.get(name.toLowerCase().replaceAll(" ", "_"));
     }
 
     public Module<T> setName(String name) {
@@ -115,6 +122,11 @@ public class Module<T> {
 
     public String getPos() {
         return "x:" + x + " y:" + y + " width:" + width + " height" + height;
+    }
+
+    public void setPos(Vec2d value) {
+        x = value.x;
+        y = value.y;
     }
 
     public String getInfo() {
@@ -138,11 +150,6 @@ public class Module<T> {
     public Module<T> setValue(T value) {
         this.value = value;
         return this;
-    }
-
-    public void setPos(Vec2d value) {
-        x = value.x;
-        y = value.y;
     }
 
     public void render(PoseStack stack, int x, int y, boolean isMouseOver) {
@@ -185,6 +192,6 @@ public class Module<T> {
     }
 
     public void setValueObj(Object o) {
-        value = (T)o;
+        value = (T) o;
     }
 }

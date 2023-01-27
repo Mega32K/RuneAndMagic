@@ -1,7 +1,5 @@
 package xclient.mega.mixin;
 
-import com.mojang.authlib.GameProfile;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,10 +10,11 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
-    @Shadow public abstract Component getDisplayName();
-
     protected PlayerMixin(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
         super(p_20966_, p_20967_);
     }
+
+    @Shadow
+    public abstract Component getDisplayName();
 
 }

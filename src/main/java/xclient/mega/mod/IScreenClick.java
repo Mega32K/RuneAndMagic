@@ -1,5 +1,7 @@
-package xclient.mega;
+package xclient.mega.mod;
 
+import xclient.mega.BmMain;
+import xclient.mega.Main;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.ActionBmC;
 import xclient.mega.mod.bigmodule.BigModuleBase;

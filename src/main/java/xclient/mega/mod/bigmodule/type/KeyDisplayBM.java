@@ -8,7 +8,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import xclient.mega.Main;
-import xclient.mega.event.RenderEvent;
+import xclient.mega.event.Render2DEvent;
 import xclient.mega.mod.bigmodule.ActionBm;
 import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.utils.MouseHandler;
@@ -31,7 +31,7 @@ public class KeyDisplayBM extends BigModuleBase implements ActionBm {
     }
 
     @SubscribeEvent
-    public static void renderHud(RenderEvent event) {
+    public static void renderHud(Render2DEvent event) {
         if (L_SECONDS == null)
             L_SECONDS = new TimeHelper(0, 0);
         if (R_SECONDS == null)

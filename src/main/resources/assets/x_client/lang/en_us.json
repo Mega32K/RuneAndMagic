@@ -91,6 +91,7 @@
   "auto_attack" : "Auto Attack",
   "super_killaura" : "Super KillAura",
   "killaura_range" : "KillAura Range",
+  "killaura_rotation" : "KillAura Rotation",
   "killaura_attackplayer" : "KillAura AttackPlayer",
   "quickly_bow" : "Quickly Bow",
   "fly" : "Fly",
@@ -109,6 +110,9 @@
   "auto_release" : "Auto Release",
   "air_jump" : "Super Jump",
   "disable_negativeeffect_rendering" : "Disable NegativeEffect Rendering",
-  "speed" : "Speed",
-  "air_jump_speed" : "AirJump Speed"
+  "timer" : "Timer",
+  "no_physical" : "No Physical",
+  "air_jump_speed" : "AirJump Speed",
+  "ghost" : "Ghost",
+  "ghost_speed" : "Ghost Speed"
 }

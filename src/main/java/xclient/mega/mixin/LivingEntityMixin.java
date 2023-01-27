@@ -24,6 +24,8 @@ import java.util.Map;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
     @Shadow
+    protected boolean jumping;
+    @Shadow
     @Final
     private Map<MobEffect, MobEffectInstance> activeEffects;
 
@@ -33,8 +35,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
     protected abstract void onEffectRemoved(MobEffectInstance p_21126_);
-
-    @Shadow protected boolean jumping;
 
     @Inject(method = "tickEffects", at = @At("HEAD"))
     public void tickEntities(CallbackInfo ci) {
@@ -61,7 +61,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(CallbackInfo ci) {
         if (Main.jumping) {
-            if (((Object)this) instanceof LocalPlayer)
+            if (((Object) this) instanceof LocalPlayer)
                 jumping = true;
         }
         if (MegaUtil.getT(getType())) {
@@ -74,7 +74,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("RETURN"), cancellable = true)
     public void tick2(CallbackInfo ci) {
         if (Main.jumping) {
-            if (((Object)this) instanceof LocalPlayer)
+            if (((Object) this) instanceof LocalPlayer)
                 jumping = true;
         }
         if (MegaUtil.getT(getType())) {

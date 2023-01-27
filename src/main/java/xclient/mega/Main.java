@@ -1,59 +1,58 @@
 package xclient.mega;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import org.lwjgl.glfw.GLFW;
-import xclient.mega.event.RenderEvent;
+import xclient.mega.event.Render2DEvent;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.ModuleManager;
+import xclient.mega.mod.ModuleValue;
 import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.mod.bigmodule.type.KeyDisplayBM;
 import xclient.mega.screen.XScreen;
 import xclient.mega.screen.YScreen;
-import xclient.mega.utils.RainbowFont;
-import xclient.mega.utils.RendererUtils;
-import xclient.mega.utils.TimeHelper;
+import xclient.mega.utils.*;
 
-import javax.annotation.Nullable;
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Mod(Main.ID)
 public class Main {
-    public static String version = "V1.2.2";
     public static final String ID = "x_client";
+    public static String version = "V1.2.3";
     public static boolean hasRead;
     public static String YES = "\u221a";
 
@@ -65,12 +64,16 @@ public class Main {
     public static float key_scale = 1.0F;
     public static float zoom = 1.0F;
 
+    public static RemotePlayer fakePlayer;
+
     @ModuleValue
     public static boolean killaura_displayInfo = false;
     @ModuleValue
     public static float killaura_range = 3.8F;
     @ModuleValue
     public static boolean killaura_attackPlayer = true;
+    @ModuleValue
+    public static boolean killaura_rotation = true;
 
     public static Set<Player> renderPlayers = new HashSet<>();
     @ModuleValue
@@ -113,6 +116,16 @@ public class Main {
     public static boolean arrow_dodge;
     @ModuleValue
     public static float air_jump_speed = 1;
+    @ModuleValue
+    public static float time_speed = 20.0F;
+    @ModuleValue
+    public static boolean enabledCameraGhost;
+    @ModuleValue
+    public static float cameraGhostSpeed = 1.0F;
+
+    public static double millisD = 0D;
+    public static long millis = 0;
+    public static ScheduledExecutorService service;
 
     public static Module<?> CLIENT;
     public static Module<Boolean> AUTO_ATTACK;
@@ -134,11 +147,14 @@ public class Main {
     public static Module<Boolean> AIR_JUMP;
     public static Module<Boolean> AUTO_RELEASE;
     public static Module<Boolean> ARROW_DODGE;
-    public static Module<Float> SPEED;
+    public static Module<Float> TIMER;
 
+    public static Module<Boolean> GHOST;
+    public static Module<Float> GHOST$SPEED;
 
     public static Module<Float> SUPER_KILL_AURA$RANGE;
     public static Module<Boolean> SUPER_KILL_AURA$ATTACK_PLAYER;
+    public static Module<Boolean> SUPER_KILL_AURA$ROTATION;
 
     public static Module<Float> AIR_JUMP$SPEED;
 
@@ -168,10 +184,24 @@ public class Main {
     public static Main instance = null;
     public static TimeHelper timeHelper;
 
+    static void update() {
+        float p = time_speed / 20.0F;
+        millisD = p + millisD;
+        millis = (long) millisD;
+    }
+
+    public static void create() {
+        if (service == null)
+            service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(Main::update, 1L, 1L, TimeUnit.MILLISECONDS);
+    }
+
     public Main() {
+        create();
+        base_timehelper = TimeHelper.create(base_timehelper, 20, 160);
+        timeHelper = TimeHelper.create(timeHelper, 10, 170);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
         MinecraftForge.EVENT_BUS.register(this);
-        Networking.registerMessage();
         registerKey(DISPLAY_INFO, OPEN, OPEN2);
         setModules();
         setBms();
@@ -198,7 +228,6 @@ public class Main {
 
     public static void setBms() {
         KEY_DISPLAY_BM = new KeyDisplayBM();
-        BmMain.setBms();
     }
 
     public static void setModules() {
@@ -217,7 +246,8 @@ public class Main {
                 killaura_range -= 0.1F;
         }).setFather(SUPER_KILL_AURA);
         SUPER_KILL_AURA$ATTACK_PLAYER = new Module<>("KillAura AttackPlayer", killaura_attackPlayer, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_attackPlayer = !killaura_attackPlayer)).setFather(SUPER_KILL_AURA);
-        SUPER_KILL_AURA = new Module<>("Super KillAura", superKillAura, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> superKillAura = !superKillAura)).addChild(SUPER_KILL_AURA$RANGE, SUPER_KILL_AURA$ATTACK_PLAYER);
+        SUPER_KILL_AURA$ROTATION = new Module<>("KillAura Rotation", killaura_rotation, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_rotation = !killaura_rotation)).setFather(SUPER_KILL_AURA);
+        SUPER_KILL_AURA = new Module<>("Super KillAura", superKillAura, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> superKillAura = !superKillAura)).addChild(SUPER_KILL_AURA$RANGE, SUPER_KILL_AURA$ATTACK_PLAYER, SUPER_KILL_AURA$ROTATION);
         QUICKLY_BOW = new Module<>("Quickly Bow", quickly_bow, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> quickly_bow = !quickly_bow);
         CRITICAL = new Module<>("Critical", critical, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> critical = !critical);
         ARROW_DODGE = new Module<>("Arrow Dodge", arrow_dodge, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> arrow_dodge = !arrow_dodge);
@@ -257,6 +287,20 @@ public class Main {
         DISABLE_NEGATIVE_EFFECT_RENDERER = new Module<>("Disable NegativeEffect Rendering", dner, false, RainbowFont.NORMAL).setFather_Bm(BmMain.RENDER).setLeft((d -> dner = !dner));
         KEY_DISPLAY = new Module<>("Key Display", key_display, false, RainbowFont.NORMAL).setFather_Bm(BmMain.RENDER).setLeft(d -> key_display = !key_display);
 
+        TIMER = new Module<>("Timer", time_speed, false, RainbowFont.NORMAL).setFather_Bm(BmMain.MISC).setLeft(d -> time_speed+=0.05F).setRight(d -> {
+            if (time_speed >= 0.05F)
+                time_speed-=0.05F;
+        });
+        GHOST = new Module<>("Ghost", enabledCameraGhost, false, RainbowFont.NORMAL).setFather_Bm(BmMain.MISC).setLeft(d -> {
+            enabledCameraGhost = !enabledCameraGhost;
+            if (!enabledCameraGhost)
+                CameraCore.POS = new Vec3(0 ,0 ,0);
+        }).addChild(GHOST$SPEED);
+        GHOST$SPEED = new Module<>("Ghost Speed", cameraGhostSpeed, false, RainbowFont.NORMAL).setFather_Bm(BmMain.MISC).setFather(GHOST).setLeft(d -> cameraGhostSpeed+=0.1F).setRight(d -> {
+            if (cameraGhostSpeed >= 0.1F)
+                cameraGhostSpeed -= 0.1F;
+        });
+
         YScreen.RETURN_LOCAL = new Module<>("Return Local").setLeft(b -> Minecraft.getInstance().cameraEntity = Minecraft.getInstance().player).unaddToList();
         BmMain.setBms();
     }
@@ -282,7 +326,7 @@ public class Main {
 
         @SubscribeEvent
         public static void mouseScroll(InputEvent.MouseScrollEvent event) {
-            if (Minecraft.getInstance().options.keySprint.consumeClick()) {
+            if (Minecraft.getInstance().options.keySprint.isDown()) {
                 zoom += event.getScrollDelta() / 20;
             }
             if (zoom < 1.0F)
@@ -326,11 +370,16 @@ public class Main {
             Entity point = mc.crosshairPickEntity;
             if (player != null) {
                 if (superKillAura) {
-                    for (Entity entity : xclient.mega.utils.MegaUtil.getEntitiesToWatch(512, player)) {
+                    for (Entity entity : xclient.mega.utils.MegaUtil.getEntitiesToWatch(30, player)) {
                         if (entity instanceof LivingEntity livingEntity && point != player && !livingEntity.isDeadOrDying() && !livingEntity.isInvisible() && player.distanceTo(entity) <= killaura_range && livingEntity.deathTime <= 0) {
                             if (mc.gameMode != null && ((LivingEntity) entity).hurtTime <= 0) {
-                                if (!killaura_attackPlayer || (killaura_attackPlayer && !(livingEntity instanceof Player)))
+                                if (client_ticks % 2 == 0 && !killaura_attackPlayer || (!(livingEntity instanceof Player) && killaura_attackPlayer)) {
+                                    if (killaura_rotation)
+                                        for (int i=0;i<40;i++)
+                                            RotationUtil.rotationAtoB(player, livingEntity);
                                     mc.gameMode.attack(player, entity);
+
+                                }
                             }
                             player.swing(InteractionHand.MAIN_HAND);
                         }
@@ -351,7 +400,7 @@ public class Main {
         }
 
         @SubscribeEvent
-        public static void renderPointAndXCInfo(RenderEvent event) {
+        public static void renderPointAndXCInfo(Render2DEvent event) {
             Minecraft mc = Minecraft.getInstance();
             LocalPlayer player = mc.player;
             Entity toWatch = xclient.mega.utils.MegaUtil.getEntityToWatch(20, player);

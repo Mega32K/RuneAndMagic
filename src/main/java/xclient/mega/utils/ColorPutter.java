@@ -2,7 +2,6 @@ package xclient.mega.utils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraftforge.registries.DeferredRegister;
 
 public class ColorPutter {
     public static final ChatFormatting[] Rainbow = new ChatFormatting[]{ChatFormatting.RED, ChatFormatting.GOLD, ChatFormatting.YELLOW, ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.BLUE, ChatFormatting.LIGHT_PURPLE};

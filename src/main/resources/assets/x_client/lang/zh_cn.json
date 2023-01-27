@@ -87,6 +87,7 @@
   "auto_attack" : "自动攻击",
   "super_killaura" : "杀戮光环",
   "killaura_range" : "杀戮光环 范围",
+  "killaura_rotation" : "杀戮光环 旋转",
   "killaura_attackplayer" : "杀戮光环 攻击玩家",
   "quickly_bow" : "快速拉弓",
   "fly" : "飞行",
@@ -105,6 +106,9 @@
   "auto_release" : "自动射箭",
   "air_jump" : "月步",
   "disable_negativeeffect_rendering" : "禁用负面效果渲染",
-  "speed" : "速度",
-  "air_jump_speed" : "月步 速度"
+  "timer" : "时间变速",
+  "no_physical" : "穿墙",
+  "air_jump_speed" : "月步 速度",
+  "ghost" : "灵魂出窍",
+  "ghost_speed" : "灵魂出窍 速度"
 }

@@ -8,9 +8,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.OptionsScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,23 +27,21 @@ import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraftforge.client.gui.NotificationModUpdateScreen;
-import net.minecraftforge.fml.ModLoader;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xclient.mega.Config;
-import xclient.mega.Main;
 import xclient.mega.button.ModuleButton;
-import xclient.mega.utils.*;
+import xclient.mega.utils.RainbowFont;
+import xclient.mega.utils.Render2DUtil;
+import xclient.mega.utils.Textures;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Mixin(TitleScreen.class)
@@ -244,13 +240,5 @@ public abstract class TitleScreenMixin extends Screen {
 
     public void init(Minecraft mc, int x, int y) {
         super.init(mc, x, y);
-        for (Widget widget : renderables) {
-            if (widget instanceof ImageButton ibm) {
-                ibm.x = width - 20;
-                ibm.y = height - 20;
-                ibm.setWidth(20);
-                ibm.setHeight(20);
-            }
-        }
     }
 }

@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import xclient.mega.CommandUtil;
+import xclient.mega.utils.CommandUtil;
 import xclient.mega.Config;
 import xclient.mega.MegaUtil;
 

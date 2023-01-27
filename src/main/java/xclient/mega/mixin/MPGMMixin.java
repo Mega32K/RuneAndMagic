@@ -15,19 +15,27 @@ import xclient.mega.Main;
 
 @Mixin(MultiPlayerGameMode.class)
 public abstract class MPGMMixin {
-    @Shadow private boolean isDestroying;
+    @Shadow
+    private boolean isDestroying;
 
-    @Shadow private BlockPos destroyBlockPos;
+    @Shadow
+    private BlockPos destroyBlockPos;
 
-    @Shadow private ItemStack destroyingItem;
+    @Shadow
+    private ItemStack destroyingItem;
 
-    @Shadow private float destroyProgress;
+    @Shadow
+    private float destroyProgress;
 
-    @Shadow private float destroyTicks;
+    @Shadow
+    private float destroyTicks;
 
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
-    @Shadow public abstract boolean destroyBlock(BlockPos p_105268_);
+    @Shadow
+    public abstract boolean destroyBlock(BlockPos p_105268_);
 
     @Inject(method = "getPickRange", at = @At("RETURN"), cancellable = true)
     private void getPickRange(CallbackInfoReturnable<Float> cir) {

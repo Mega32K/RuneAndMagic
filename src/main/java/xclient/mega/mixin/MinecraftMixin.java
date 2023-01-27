@@ -46,57 +46,76 @@ import java.io.InputStream;
 @Mixin(value = Minecraft.class, priority = 999)
 public abstract class MinecraftMixin {
     @Shadow
+    public Window window;
+    @Shadow
+    public Options options;
+    @Shadow
+    @Nullable
+    public LocalPlayer player;
+    @Shadow
+    public Gui gui;
+    @Shadow
+    public LevelRenderer levelRenderer;
+    @Shadow
+    public GameRenderer gameRenderer;
+    @Shadow
+    @Nullable
+    public Screen screen;
+    @Shadow
+    @Nullable
+    public TutorialToast socialInteractionsToast;
+    @Shadow
+    public Tutorial tutorial;
+    @Shadow
+    @Nullable
+    public MultiPlayerGameMode gameMode;
+    @Shadow
+    @Nullable
+    public Overlay overlay;
+    @Shadow
+    public int rightClickDelay;
+    @Shadow
+    public int missTime;
+    @Shadow
+    public MouseHandler mouseHandler;
+    @Shadow
+    @Nullable
+    public Entity cameraEntity;
+
+    @Shadow
     public abstract Window getWindow();
 
-    @Shadow public Window window;
+    @Shadow
+    @Nullable
+    public abstract Entity getCameraEntity();
 
-    @Shadow public Options options;
+    @Shadow
+    protected abstract boolean isMultiplayerServer();
 
-    @Shadow @Nullable public LocalPlayer player;
+    @Shadow
+    public abstract void setScreen(@org.jetbrains.annotations.Nullable Screen p_91153_);
 
-    @Shadow public Gui gui;
+    @Shadow
+    @Nullable
+    public abstract ClientPacketListener getConnection();
 
-    @Shadow public LevelRenderer levelRenderer;
+    @Shadow
+    protected abstract void openChatScreen(String p_91327_);
 
-    @Shadow public GameRenderer gameRenderer;
+    @Shadow
+    protected abstract boolean startAttack();
 
-    @Shadow @Nullable public Screen screen;
+    @Shadow
+    protected abstract void startUseItem();
 
-    @Shadow @Nullable public abstract Entity getCameraEntity();
+    @Shadow
+    protected abstract void pickBlock();
 
-    @Shadow protected abstract boolean isMultiplayerServer();
+    @Shadow
+    protected abstract void continueAttack(boolean p_91387_);
 
-    @Shadow @Nullable public TutorialToast socialInteractionsToast;
-
-    @Shadow public Tutorial tutorial;
-
-    @Shadow public abstract void setScreen(@org.jetbrains.annotations.Nullable Screen p_91153_);
-
-    @Shadow @Nullable public MultiPlayerGameMode gameMode;
-
-    @Shadow @Nullable public abstract ClientPacketListener getConnection();
-
-    @Shadow protected abstract void openChatScreen(String p_91327_);
-
-    @Shadow @Nullable public Overlay overlay;
-
-    @Shadow protected abstract boolean startAttack();
-
-    @Shadow protected abstract void startUseItem();
-
-    @Shadow protected abstract void pickBlock();
-
-    @Shadow public int rightClickDelay;
-
-    @Shadow protected abstract void continueAttack(boolean p_91387_);
-
-    @Shadow public int missTime;
-
-    @Shadow public MouseHandler mouseHandler;
-
-    @Shadow @Nullable public Entity cameraEntity;
-
-    @Shadow public abstract void run();
+    @Shadow
+    public abstract void run();
 
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -130,7 +149,7 @@ public abstract class MinecraftMixin {
     @Overwrite
     @SuppressWarnings("ALL")
     private void handleKeybinds() {
-        for(; this.options.keyTogglePerspective.consumeClick(); this.levelRenderer.needsUpdate()) {
+        for (; this.options.keyTogglePerspective.consumeClick(); this.levelRenderer.needsUpdate()) {
             CameraType cameratype = this.options.getCameraType();
             this.options.setCameraType(this.options.getCameraType().cycle());
             if (cameratype.isFirstPerson() != this.options.getCameraType().isFirstPerson()) {
@@ -138,11 +157,11 @@ public abstract class MinecraftMixin {
             }
         }
 
-        while(this.options.keySmoothCamera.consumeClick()) {
+        while (this.options.keySmoothCamera.consumeClick()) {
             this.options.smoothCamera = !this.options.smoothCamera;
         }
 
-        for(int i = 0; i < 9; ++i) {
+        for (int i = 0; i < 9; ++i) {
             boolean flag = this.options.keySaveHotbarActivator.isDown();
             boolean flag1 = this.options.keyLoadHotbarActivator.isDown();
             if (this.options.keyHotbarSlots[i].consumeClick()) {
@@ -156,7 +175,7 @@ public abstract class MinecraftMixin {
             }
         }
 
-        while(this.options.keySocialInteractions.consumeClick()) {
+        while (this.options.keySocialInteractions.consumeClick()) {
             if (!this.isMultiplayerServer()) {
                 this.player.displayClientMessage(Minecraft.SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
                 NarratorChatListener.INSTANCE.sayNow(Minecraft.SOCIAL_INTERACTIONS_NOT_AVAILABLE);
@@ -170,7 +189,7 @@ public abstract class MinecraftMixin {
             }
         }
 
-        while(this.options.keyInventory.consumeClick() && player != null) {
+        while (this.options.keyInventory.consumeClick() && player != null) {
             if (this.gameMode.isServerControlledInventory()) {
                 xclient.mega.utils.MegaUtil.really_sendOpenInv(player, (cameraEntity instanceof AbstractClientPlayer p ? p : player));
             } else {
@@ -179,23 +198,23 @@ public abstract class MinecraftMixin {
             }
         }
 
-        while(this.options.keyAdvancements.consumeClick()) {
+        while (this.options.keyAdvancements.consumeClick()) {
             this.setScreen(new AdvancementsScreen(this.player.connection.getAdvancements()));
         }
 
-        while(this.options.keySwapOffhand.consumeClick()) {
+        while (this.options.keySwapOffhand.consumeClick()) {
             if (!this.player.isSpectator()) {
                 this.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ZERO, Direction.DOWN));
             }
         }
 
-        while(this.options.keyDrop.consumeClick()) {
+        while (this.options.keyDrop.consumeClick()) {
             if (!this.player.isSpectator() && this.player.drop(Screen.hasControlDown())) {
                 this.player.swing(InteractionHand.MAIN_HAND);
             }
         }
 
-        while(this.options.keyChat.consumeClick()) {
+        while (this.options.keyChat.consumeClick()) {
             this.openChatScreen("");
         }
 
@@ -209,25 +228,25 @@ public abstract class MinecraftMixin {
                 this.gameMode.releaseUsingItem(this.player);
             }
 
-            while(this.options.keyAttack.consumeClick()) {
+            while (this.options.keyAttack.consumeClick()) {
             }
 
-            while(this.options.keyUse.consumeClick()) {
+            while (this.options.keyUse.consumeClick()) {
             }
 
-            while(this.options.keyPickItem.consumeClick()) {
+            while (this.options.keyPickItem.consumeClick()) {
             }
         } else {
-            while(this.options.keyAttack.consumeClick()) {
+            while (this.options.keyAttack.consumeClick()) {
                 flag2 |= this.startAttack();
                 missTime = 0;
             }
 
-            while(this.options.keyUse.consumeClick()) {
+            while (this.options.keyUse.consumeClick()) {
                 this.startUseItem();
             }
 
-            while(this.options.keyPickItem.consumeClick()) {
+            while (this.options.keyPickItem.consumeClick()) {
                 this.pickBlock();
             }
         }

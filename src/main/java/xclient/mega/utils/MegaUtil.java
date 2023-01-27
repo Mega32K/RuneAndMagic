@@ -7,9 +7,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class MegaUtil {
+
+    public static Random random = new Random();
 
     public static List<Entity> getEntitiesToWatch(int level, Player player) {
         if (player == null)
@@ -32,7 +37,7 @@ public class MegaUtil {
         List<Entity> entities = new ArrayList<>();
         for (int dis = 0; dis < level * 2; dis += 2) {
             AABB aabb = player.getBoundingBox();
-            aabb = new AABB(aabb.minX, aabb.minY+1D, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
+            aabb = new AABB(aabb.minX, aabb.minY + 1D, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
             Vec3 vec = player.getLookAngle();
             vec = vec.normalize();
             aabb = aabb.move(vec.x * dis, vec.y * dis, vec.z * dis);
@@ -67,9 +72,7 @@ public class MegaUtil {
     }
 
     public static <T> T randomFrom(T... ts) {
-        List<T> list = Arrays.asList(ts);
-        int rand = new Random().nextInt(list.size());
-        return list.get(rand);
+        return ts[random.nextInt(ts.length)];
     }
 
     public static void really_sendOpenInv(LocalPlayer player, Player target) {

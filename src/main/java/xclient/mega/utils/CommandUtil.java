@@ -1,4 +1,4 @@
-package xclient.mega;
+package xclient.mega.utils;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;

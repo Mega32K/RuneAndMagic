@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 
 public class XSynchedEntityData extends SynchedEntityData {
     public XSynchedEntityData(Entity p_135351_, SynchedEntityData data) {
-        super( p_135351_);
+        super(p_135351_);
         for (Field f : SynchedEntityData.class.getDeclaredFields()) {
             f.setAccessible(true);
             if (!Modifier.isStatic(f.getModifiers()) && !f.getType().equals(Integer.TYPE)) {

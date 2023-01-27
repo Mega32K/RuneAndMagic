@@ -8,5 +8,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LivingEntity.class)
 public interface ILiving {
     @Accessor("DATA_HEALTH_ID")
-     EntityDataAccessor<Float>  DATA_HEALTH_ID();
+    EntityDataAccessor<Float> DATA_HEALTH_ID();
 }

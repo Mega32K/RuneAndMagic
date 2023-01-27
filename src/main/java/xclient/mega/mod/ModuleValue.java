@@ -1,4 +1,4 @@
-package xclient.mega;
+package xclient.mega.mod;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
