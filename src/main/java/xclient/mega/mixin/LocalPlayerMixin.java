@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xclient.mega.Main;
 import xclient.mega.utils.PU;
+import xclient.mega.utils.core.AutoFightCore;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer {
@@ -72,6 +73,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo c) {
+        if (Main.auto_fight && AutoFightCore.Target != null)
+            AutoFightCore.tick(this);
         if (Main.respawn && deathTime > 0) {
             connection.send(new ServerboundChatPacket("/back"));
             connection.send(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
@@ -108,5 +111,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
                     setDeltaMovement(getDeltaMovement().add(0, -2, 0));
             }
         }
+        this.connection.send(new ServerboundMovePlayerPacket.Rot(this.getYRot(), this.getXRot(), this.onGround));
     }
 }

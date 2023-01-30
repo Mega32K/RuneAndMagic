@@ -48,6 +48,12 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Float> time_speed;
     public static ForgeConfigSpec.ConfigValue<Boolean> enabledCameraGhost;
     public static ForgeConfigSpec.ConfigValue<Float> cameraGhostSpeed;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_teleportation_tracking;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_normal_tracking;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_rotation;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_attack_delay;
+    public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_auto_shield;
 
     public static ForgeConfigSpec.ConfigValue<Integer> _x_;
     public static ForgeConfigSpec.ConfigValue<Integer> _y_;
@@ -98,6 +104,12 @@ public class Config {
         time_speed = COMMON_BUILDER.define("time_speed", 20.0F);
         enabledCameraGhost = COMMON_BUILDER.define("enabledCameraGhost", false);
         cameraGhostSpeed = COMMON_BUILDER.define("cameraGhostSpeed", 1.0F);
+        auto_fight = COMMON_BUILDER.define("auto fight", false);
+        auto_fight_teleportation_tracking = COMMON_BUILDER.define("auto_fight_teleportation_tracking", false);
+        auto_fight_normal_tracking = COMMON_BUILDER.define("auto_fight_normal_tracking", true);
+        auto_fight_rotation = COMMON_BUILDER.define("auto_fight_rotation", true);
+        auto_fight_attack_delay = COMMON_BUILDER.define("auto_fight_attack_delay", false);
+        auto_fight_auto_shield = COMMON_BUILDER.define("auto_fight_auto_shield", true);
         background = COMMON_BUILDER.define("background index", 1);
         _x_ = COMMON_BUILDER.define("key x", 3);
         _y_ = COMMON_BUILDER.define("key y", 70);

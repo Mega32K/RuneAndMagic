@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import xclient.mega.event.Render2DEvent;
 import xclient.mega.mod.Module;
@@ -61,7 +62,7 @@ public class Message {
         }
         Render2DUtil.drawRect(stack, x , y, width, height, color.getRGB());
         Render2DUtil.drawRect(stack, x , y+height-2, line, 2, Color.GREEN.getRGB());
-        RainbowFont.INS.drawShadow(stack, target.getInfo(), x+1, y, 0);
+        Minecraft.getInstance().font.drawShadow(stack, target.getInfo(), x+1, y, 0xFFFFFFFF);
     }
 
     public void renderMessage(PoseStack stack) {
@@ -88,7 +89,7 @@ public class Message {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void renderSelf(Render2DEvent event) {
         renderMessage(new PoseStack());
     }

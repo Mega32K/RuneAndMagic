@@ -88,6 +88,10 @@
   "xc.info.logic1" : "On",
   "xc.info.logic2" : "Off",
 
+  "info.choose" : "Press Ctrl+T to choose target",
+
+  "key.choose" : "Choose target",
+
   "auto_attack" : "Auto Attack",
   "super_killaura" : "Super KillAura",
   "killaura_range" : "KillAura Range",
@@ -114,5 +118,11 @@
   "no_physical" : "No Physical",
   "air_jump_speed" : "AirJump Speed",
   "ghost" : "Ghost",
-  "ghost_speed" : "Ghost Speed"
+  "ghost_speed" : "Ghost Speed",
+  "auto_fight" : "Auto Fight",
+  "auto_fight_attack_delay" : "Auto Fight Attack Delay",
+  "auto_fight_rotation" : "Auto Fight Rotation",
+  "auto_fight_auto_shield" : "Auto Fight Auto Shield",
+  "auto_fight_teleportation_tracking" : "Auto Fight Teleportation Tracking",
+  "auto_fight_normal_tracking" : "Auto Fight Normal Tracking"
 }

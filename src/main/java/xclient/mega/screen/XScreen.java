@@ -16,6 +16,7 @@ import xclient.mega.MegaUtil;
 import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.ActionBmC;
 import xclient.mega.mod.bigmodule.BigModuleBase;
+import xclient.mega.mod.message.Message;
 import xclient.mega.utils.RainbowFont;
 import xclient.mega.utils.Render2DUtil;
 import xclient.mega.utils.Vec2d;
@@ -30,9 +31,24 @@ public class XScreen extends Screen implements IScreenClick {
     public static boolean z;
     public boolean isRenderingConfig;
     public Module<?> configModule;
+    public static Module<?> EMPTY;
 
     public XScreen() {
         super(new TextComponent(""));
+        EMPTY = new Module<>("", null, false, null){
+            public void left() {
+                if (left != null) {
+                    left.run(this);
+                } else System.out.println(getName() + " left module is NULL!");
+            }
+
+            public void right() {
+                if (right != null) {
+                    right.run(this);
+                } else System.out.println(getName() + " right module is NULL!");
+            }
+        }.unaddToList().setFather(null);
+        Module.every.remove(EMPTY);
     }
 
     public static boolean isInRange(Module<?> module, int x, int y) {
@@ -63,19 +79,18 @@ public class XScreen extends Screen implements IScreenClick {
             for (Module<?> child : configModule.children) {
                 for (Module<?> module : Module.every) {
                     if (module.getName().equals(child.getName())) {
-                        System.out.println("same");
                         if (XScreen.isInRange(child, (int) x, (int) y)) {
                             if (code == 0) {
-                                System.out.println("l");
                                 child.left();
+                                EMPTY.left();
                                 for (Module<?> mm : Module.every) {
                                     if (mm.sameModule(configModule))
                                         configModule = mm;
                                 }
                             }
                             if (code == 1) {
-                                System.out.println("r");
                                 child.right();
+                                EMPTY.right();
                                 for (Module<?> mm : Module.every) {
                                     if (mm.sameModule(configModule))
                                         configModule = mm;
@@ -154,11 +169,15 @@ public class XScreen extends Screen implements IScreenClick {
             int x = 10, y = 10;
             Render2DUtil.drawRect(stack, x, y - 3, 200, 120, new Color(0, 0, 0, 60).getRGB());
             x += 8;
-            for (Module<?> m : configModule.children) {
-                m.render(stack, x, y, XScreen.isInRange(m, mx, my));
-                y += 11;
-                if (y >= Minecraft.getInstance().getWindow().getScreenHeight() - 50)
-                    x += 130;
+            for (Module<?> module : Module.every) {
+                for (Module<?> m : configModule.children) {
+                    if (m.getName().equals(module.getName())) {
+                        m.render(stack, x, y, XScreen.isInRange(m, mx, my));
+                        y += 11;
+                        if (y >= Minecraft.getInstance().getWindow().getScreenHeight() - 50)
+                            x += 130;
+                    }
+                }
             }
         }
         super.render(stack, mx, my, pt);

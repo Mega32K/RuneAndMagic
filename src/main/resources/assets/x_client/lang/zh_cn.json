@@ -77,13 +77,15 @@
   "dimension_banning.command.not_found" : "维度不在封禁列表内",
   "dimension_banning.command.had" : "已在封禁列表中",
 
-  "key.message" : "Open/Close EditScreen",
-  "key.y" : "Open/Close CameraScreen",
-  "key.ka" : "Super KillAura",
+  "key.message" : "打开/关闭 编辑界面",
+  "key.y" : "打开/关闭 窥屏界面",
   "key.info" : "显示信息",
   "key.category.x_client" : "The X",
   "xc.info.logic1" : "开启",
   "xc.info.logic2" : "关闭",
+  "info.choose" : "按下 Ctrl+T 选择目标",
+
+  "key.choose" : "选择目标",
   "auto_attack" : "自动攻击",
   "super_killaura" : "杀戮光环",
   "killaura_range" : "杀戮光环 范围",
@@ -110,5 +112,11 @@
   "no_physical" : "穿墙",
   "air_jump_speed" : "月步 速度",
   "ghost" : "灵魂出窍",
-  "ghost_speed" : "灵魂出窍 速度"
+  "ghost_speed" : "灵魂出窍 速度",
+  "auto_fight" : "自动战斗",
+  "auto_fight_attack_delay" : "自动战斗 攻击间隔",
+  "auto_fight_rotation" : "自动战斗 旋转",
+  "auto_fight_auto_shield" : "自动战斗 自动盾牌",
+  "auto_fight_teleportation_tracking" : "自动战斗 瞬移追踪",
+  "auto_fight_normal_tracking" : "自动战斗 正常追踪"
 }

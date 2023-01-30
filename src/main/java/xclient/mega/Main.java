@@ -7,12 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -23,7 +24,6 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -38,7 +38,12 @@ import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.mod.bigmodule.type.KeyDisplayBM;
 import xclient.mega.screen.XScreen;
 import xclient.mega.screen.YScreen;
-import xclient.mega.utils.*;
+import xclient.mega.utils.RainbowFont;
+import xclient.mega.utils.RendererUtils;
+import xclient.mega.utils.RotationUtil;
+import xclient.mega.utils.TimeHelper;
+import xclient.mega.utils.core.AutoFightCore;
+import xclient.mega.utils.core.CameraCore;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 @Mod(Main.ID)
 public class Main {
     public static final String ID = "x_client";
-    public static String version = "V1.2.3";
+    public static String version = "V1.2.4";
     public static boolean hasRead;
     public static String YES = "\u221a";
 
@@ -64,10 +69,6 @@ public class Main {
     public static float key_scale = 1.0F;
     public static float zoom = 1.0F;
 
-    public static RemotePlayer fakePlayer;
-
-    @ModuleValue
-    public static boolean killaura_displayInfo = false;
     @ModuleValue
     public static float killaura_range = 3.8F;
     @ModuleValue
@@ -122,6 +123,18 @@ public class Main {
     public static boolean enabledCameraGhost;
     @ModuleValue
     public static float cameraGhostSpeed = 1.0F;
+    @ModuleValue
+    public static boolean auto_fight = false;
+    @ModuleValue
+    public static boolean auto_fight_teleportation_tracking = false;
+    @ModuleValue
+    public static boolean auto_fight_normal_tracking = true;
+    @ModuleValue
+    public static boolean auto_fight_rotation = true;
+    @ModuleValue
+    public static boolean auto_fight_attack_delay = false;
+    @ModuleValue
+    public static boolean auto_fight_auto_shield = true;
 
     public static double millisD = 0D;
     public static long millis = 0;
@@ -144,10 +157,16 @@ public class Main {
     public static Module<Boolean> QUICKLY_BOW;
     public static Module<Boolean> JUMPING;
     public static Module<Boolean> CRITICAL;
-    public static Module<Boolean> AIR_JUMP;
     public static Module<Boolean> AUTO_RELEASE;
     public static Module<Boolean> ARROW_DODGE;
     public static Module<Float> TIMER;
+
+    public static Module<Boolean> AUTO_FIGHT;
+    public static Module<Boolean> AUTO_FIGHT$TELEPORTATION_TRACKING;
+    public static Module<Boolean> AUTO_FIGHT$NORMAL_TRACKING;
+    public static Module<Boolean> AUTO_FIGHT$ROTATION;
+    public static Module<Boolean> AUTO_FIGHT$ATTACK_DELAY;
+    public static Module<Boolean> AUTO_FIGHT$AUTO_SHIELD;
 
     public static Module<Boolean> GHOST;
     public static Module<Float> GHOST$SPEED;
@@ -156,6 +175,7 @@ public class Main {
     public static Module<Boolean> SUPER_KILL_AURA$ATTACK_PLAYER;
     public static Module<Boolean> SUPER_KILL_AURA$ROTATION;
 
+    public static Module<Boolean> AIR_JUMP;
     public static Module<Float> AIR_JUMP$SPEED;
 
     public static List<Module<Component>> PLAYER_CAMERA;
@@ -180,6 +200,12 @@ public class Main {
             KeyModifier.CONTROL,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_Y,
+            "key.category.x_client");
+    public static KeyMapping CHOOSE_TARGET = new KeyMapping("key.choose",
+            KeyConflictContext.IN_GAME,
+            KeyModifier.CONTROL,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_T,
             "key.category.x_client");
     public static Main instance = null;
     public static TimeHelper timeHelper;
@@ -230,7 +256,7 @@ public class Main {
         KEY_DISPLAY_BM = new KeyDisplayBM();
     }
 
-    public static void setModules() {
+    public static void reload() {
         ModuleManager.modules.clear();
         ModuleManager.configuration_father_modules.clear();
         Module.every.clear();
@@ -240,6 +266,13 @@ public class Main {
             BmMain.RENDER.setPos(0, 33);
             BmMain.MISC.setPos(0, 44);
         });
+
+        AUTO_FIGHT = new Module<>("Auto Fight", auto_fight, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft(d -> auto_fight=!auto_fight).addChild(AUTO_FIGHT$ROTATION, AUTO_FIGHT$ATTACK_DELAY, AUTO_FIGHT$AUTO_SHIELD, AUTO_FIGHT$NORMAL_TRACKING, AUTO_FIGHT$TELEPORTATION_TRACKING);
+        AUTO_FIGHT$ATTACK_DELAY = new Module<>("Auto Fight Attack Delay", auto_fight_attack_delay, false, RainbowFont.NORMAL).setLeft(d -> auto_fight_attack_delay=!auto_fight_attack_delay).setFather(AUTO_FIGHT);
+        AUTO_FIGHT$ROTATION = new Module<>("Auto Fight Rotation", auto_fight_rotation, false, RainbowFont.NORMAL).setLeft(d -> auto_fight_rotation=!auto_fight_rotation).setFather(AUTO_FIGHT);
+        AUTO_FIGHT$AUTO_SHIELD = new Module<>("Auto Fight Auto Shield", auto_fight_auto_shield, false, RainbowFont.NORMAL).setLeft(d -> auto_fight_auto_shield=!auto_fight_auto_shield).setFather(AUTO_FIGHT);
+        AUTO_FIGHT$TELEPORTATION_TRACKING = new Module<>("Auto Fight Teleportation Tracking", auto_fight_teleportation_tracking, false, RainbowFont.NORMAL).setLeft(d -> auto_fight_teleportation_tracking=!auto_fight_teleportation_tracking).setFather(AUTO_FIGHT);
+        AUTO_FIGHT$NORMAL_TRACKING = new Module<>("Auto Fight Normal Tracking", auto_fight_normal_tracking, false, RainbowFont.NORMAL).setLeft(d -> auto_fight_normal_tracking=!auto_fight_normal_tracking).setFather(AUTO_FIGHT);
         AUTO_ATTACK = new Module<>("Auto Attack", auto_attack, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> auto_attack = !auto_attack));
         SUPER_KILL_AURA$RANGE = new Module<>("KillAura Range", killaura_range, false, RainbowFont.NORMAL).setFather_Bm(BmMain.COMBAT).setLeft((d -> killaura_range += 0.5F)).setRight(d -> {
             if (killaura_range >= 0.1F)
@@ -302,11 +335,53 @@ public class Main {
         });
 
         YScreen.RETURN_LOCAL = new Module<>("Return Local").setLeft(b -> Minecraft.getInstance().cameraEntity = Minecraft.getInstance().player).unaddToList();
+    }
+
+    public static void setModules() {
+        reload();
         BmMain.setBms();
     }
 
     @Mod.EventBusSubscriber
     public static class ShaderEvents {
+        @SuppressWarnings("ConstantConditions")
+        @SubscribeEvent
+        public static void renderHudEvent(Render2DEvent event) {
+            Minecraft mc = Minecraft.getInstance();
+            int x=0,y=mc.getWindow().getGuiScaledHeight()-mc.font.lineHeight;
+            PoseStack stack = new PoseStack();
+            if (auto_fight) {
+                mc.font.drawShadow(stack, I18n.get("info.choose"), x, y, 0xFFFFFFFF);
+                y-=mc.font.lineHeight+1;
+                if (AutoFightCore.Target != null) {
+                    Entity target = AutoFightCore.Target;
+                    Font f = RainbowFont.WATER;
+                    f.drawShadow(stack, "Name:" + target.getName().getString(), x, y, 0);
+                    y -= mc.font.lineHeight + 1;
+                    Vec3 v = target.position();
+                    v = new Vec3(Double.parseDouble(String.format("%.2f", v.x)), Double.parseDouble(String.format("%.2f", v.y)), Double.parseDouble(String.format("%.2f", v.z)));
+                    f.drawShadow(stack, "Position:" + v.toString().replace(",", ", "), x, y, 0);
+                    y -= mc.font.lineHeight + 1;
+                    Vec3 m = target.getDeltaMovement();
+                    m = new Vec3(Double.parseDouble(String.format("%.2f", m.x)), Double.parseDouble(String.format("%.2f", m.y)), Double.parseDouble(String.format("%.2f", m.z)));
+                    f.drawShadow(stack, "Motion:"+m.toString().replace(",", ", "), x, y, 0);
+                    y -= mc.font.lineHeight + 1;
+                    if (target instanceof LivingEntity l) {
+                        f.drawShadow(stack, "Health:(" + String.format("%.2f", l.getHealth()) + "/" + String.format("%.2f", l.getMaxHealth()) + ")", x, y, 0);
+                        y -= mc.font.lineHeight + 1;
+                        f.drawShadow(stack, "Armor:" + String.format("%.2f", l.getAttribute(Attributes.ARMOR).getBaseValue()), x, y, 0);
+                        y -= mc.font.lineHeight + 1;
+                        f.drawShadow(stack, "AttackDamage:" + String.format("%.2f", l.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()), x, y, 0);
+                        y -= mc.font.lineHeight + 1;
+                    }
+                }
+            }
+            if (enabledCameraGhost && mc.player != null) {
+                Vec3 v = mc.gameRenderer.getMainCamera().getPosition();
+                v = new Vec3(Double.parseDouble(String.format("%.2f", v.x)), Double.parseDouble(String.format("%.2f", v.y)), Double.parseDouble(String.format("%.2f", v.z)));
+                mc.font.drawShadow(stack,"CameraPosition:" + v.toString().replace("(", "").replace(")", "").replace(",", ", ") , x, y, 0xFFFFFFFF);
+            }
+        }
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT)
@@ -322,6 +397,9 @@ public class Main {
         public static void input(InputEvent.KeyInputEvent event) {
             if (DISPLAY_INFO.consumeClick())
                 enable_display_info = !enable_display_info;
+            if (CHOOSE_TARGET.consumeClick() && Minecraft.getInstance().player != null) {
+                AutoFightCore.Target = xclient.mega.utils.MegaUtil.getEntityToWatch(20, Minecraft.getInstance().player);
+            }
         }
 
         @SubscribeEvent
@@ -340,7 +418,7 @@ public class Main {
 
         @SubscribeEvent
         public static void playerUpdate(TickEvent.PlayerTickEvent event) {
-            if (event.side.isClient() && event.player instanceof LocalPlayer localPlayer) {
+            if (event.side.isClient() && event.player instanceof LocalPlayer) {
                 if (sprint) {
                     event.player.setSprinting(true);
                 }
@@ -358,8 +436,7 @@ public class Main {
             if (OPEN.consumeClick())
                 Minecraft.getInstance().setScreen(new XScreen());
             if (OPEN2.consumeClick())
-                Minecraft.getInstance().setScreen(new YScreen());
-
+                Minecraft.getInstance().setScreen(new YScreen()); 
         }
 
         @SubscribeEvent
@@ -368,6 +445,8 @@ public class Main {
             Minecraft mc = Minecraft.getInstance();
             LocalPlayer player = mc.player;
             Entity point = mc.crosshairPickEntity;
+            if (killaura_range > 6.0F)
+                killaura_range = 6.0F;
             if (player != null) {
                 if (superKillAura) {
                     for (Entity entity : xclient.mega.utils.MegaUtil.getEntitiesToWatch(30, player)) {

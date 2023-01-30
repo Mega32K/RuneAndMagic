@@ -50,6 +50,10 @@ public class KeyDisplayBM extends BigModuleBase implements ActionBm {
 
     @SubscribeEvent
     public static void onMouseClick(InputEvent.MouseInputEvent event) {
+        if (L_SECONDS == null)
+            L_SECONDS = new TimeHelper(0, 0);
+        if (R_SECONDS == null)
+            R_SECONDS = new TimeHelper(0, 0);
         if (Minecraft.getInstance().screen == null) {
             if (event.getButton() == 0) {
                 leftClicks++;

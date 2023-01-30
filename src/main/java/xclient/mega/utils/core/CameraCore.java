@@ -1,4 +1,4 @@
-package xclient.mega.utils;
+package xclient.mega.utils.core;
 
 import net.minecraft.world.phys.Vec3;
 

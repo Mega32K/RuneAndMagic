@@ -82,14 +82,15 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("HEAD"))
     private void init(CallbackInfo ci) {
+        Textures.background = Config.background.get();
         addRenderableWidget(new ModuleButton(this.width - 20, this.height - 20, 20, 20, new TextComponent("Q"), (b) -> {
             if (Textures.background < 3)
                 Textures.background++;
             else if (Textures.background == 3)
                 Textures.background = 1;
-            System.out.println(Textures.background);
+            Config.background.set(Textures.background);
+            Config.COMMON_CONFIG.save();
         }));
-        Textures.background = Config.background.get();
     }
 
     /**

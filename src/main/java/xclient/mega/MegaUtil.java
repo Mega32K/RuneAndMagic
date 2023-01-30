@@ -277,7 +277,6 @@ public class MegaUtil {
         set(Config.jumping, Main.jumping);
         set(Config.quickly_bow, Main.quickly_bow);
         */
-        set(Config.background, Textures.background);
         set(Config._x_, Main._x_);
         set(Config._y_, Main._y_);
         set(Config.key_scale, Main.key_scale);
@@ -335,7 +334,6 @@ public class MegaUtil {
         Main._x_ = Config._x_.get();
         Main._y_ = Config._y_.get();
         Main.key_scale = Config.key_scale.get();
-        Textures.background = Config.background.get();
         Main.hasRead = true;
     }
 
