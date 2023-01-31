@@ -135,6 +135,8 @@ public class Main {
     public static boolean auto_fight_attack_delay = false;
     @ModuleValue
     public static boolean auto_fight_auto_shield = true;
+    @ModuleValue
+    public static float speed = 0.1F;
 
     public static double millisD = 0D;
     public static long millis = 0;
@@ -160,6 +162,7 @@ public class Main {
     public static Module<Boolean> AUTO_RELEASE;
     public static Module<Boolean> ARROW_DODGE;
     public static Module<Float> TIMER;
+    public static Module<Float> SPEED;
 
     public static Module<Boolean> AUTO_FIGHT;
     public static Module<Boolean> AUTO_FIGHT$TELEPORTATION_TRACKING;
@@ -307,6 +310,10 @@ public class Main {
                 reach_distance -= 0.1F;
         }));
         QUICKLY_PLACE = new Module<>("Quickly Place", quickly_place, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setFather_Bm(BmMain.PLAYER).setLeft(d -> quickly_place = !quickly_place);
+        SPEED = new Module<>("Speed", speed, false, RainbowFont.NORMAL).setFather_Bm(BmMain.PLAYER).setLeft(d -> speed+=0.025F).setRight(d -> {
+            if (speed >=0.025F)
+                speed-=0.025F;
+        });
 
         ENABLE_HURT_EFFECT = new Module<>("Hurt Effect", enableHurtEffect, false, RainbowFont.NORMAL).setFather_Bm(BmMain.RENDER).setLeft((d -> enableHurtEffect = !enableHurtEffect));
         RENDER_OUTLINE = new Module<>("Render Players Outline", renderPlayerOutline, false, RainbowFont.NORMAL).setFather_Bm(BmMain.RENDER).setLeft((d -> renderPlayerOutline = !renderPlayerOutline));
@@ -400,15 +407,6 @@ public class Main {
             if (CHOOSE_TARGET.consumeClick() && Minecraft.getInstance().player != null) {
                 AutoFightCore.Target = xclient.mega.utils.MegaUtil.getEntityToWatch(20, Minecraft.getInstance().player);
             }
-        }
-
-        @SubscribeEvent
-        public static void mouseScroll(InputEvent.MouseScrollEvent event) {
-            if (Minecraft.getInstance().options.keySprint.isDown()) {
-                zoom += event.getScrollDelta() / 20;
-            }
-            if (zoom < 1.0F)
-                zoom = 1.0F;
         }
     }
 

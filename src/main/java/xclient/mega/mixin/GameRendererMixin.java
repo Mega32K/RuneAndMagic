@@ -5,9 +5,12 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +37,6 @@ public abstract class GameRendererMixin {
     private long lastActiveTime;
     @Shadow
     private boolean effectActive;
-
     @Shadow
     @Nullable
     private PostChain postEffect;
@@ -109,11 +111,11 @@ public abstract class GameRendererMixin {
     public void render(float p_109094_, long p_109095_, boolean p_109096_, CallbackInfo ci) {
         if (Main.enabledCameraGhost && minecraft.player != null && minecraft.level != null) {
             if (minecraft.options.keyUp.isDown()) {
-                CameraCore.add(minecraft.player.getLookAngle().scale(.2D * Main.cameraGhostSpeed));
+                CameraCore.add(minecraft.cameraEntity.getLookAngle().scale(.2D * Main.cameraGhostSpeed));
             }
 
             if (minecraft.options.keyDown.isDown()) {
-                CameraCore.add(minecraft.player.getLookAngle().scale(-.2D * Main.cameraGhostSpeed));
+                CameraCore.add(minecraft.cameraEntity.getLookAngle().scale(-.2D * Main.cameraGhostSpeed));
             }
 
             if (minecraft.options.keyLeft.isDown()) {

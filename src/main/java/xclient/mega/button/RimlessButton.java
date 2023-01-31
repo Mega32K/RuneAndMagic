@@ -1,6 +1,7 @@
 package xclient.mega.button;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class RimlessButton extends SolidColorButton {
     public RimlessButton(int p_93721_, int p_93722_, int p_93723_, int p_93724_, Component p_93725_, OnPress p_93726_) {

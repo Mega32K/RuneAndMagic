@@ -54,6 +54,7 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_rotation;
     public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_attack_delay;
     public static ForgeConfigSpec.ConfigValue<Boolean> auto_fight_auto_shield;
+    public static ForgeConfigSpec.ConfigValue<Float> speed;
 
     public static ForgeConfigSpec.ConfigValue<Integer> _x_;
     public static ForgeConfigSpec.ConfigValue<Integer> _y_;
@@ -110,6 +111,8 @@ public class Config {
         auto_fight_rotation = COMMON_BUILDER.define("auto_fight_rotation", true);
         auto_fight_attack_delay = COMMON_BUILDER.define("auto_fight_attack_delay", false);
         auto_fight_auto_shield = COMMON_BUILDER.define("auto_fight_auto_shield", true);
+        speed = COMMON_BUILDER.define("speed", 0.1F);
+
         background = COMMON_BUILDER.define("background index", 1);
         _x_ = COMMON_BUILDER.define("key x", 3);
         _y_ = COMMON_BUILDER.define("key y", 70);

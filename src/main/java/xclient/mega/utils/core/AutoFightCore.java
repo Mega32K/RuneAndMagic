@@ -19,8 +19,10 @@ public class AutoFightCore {
     public static void tick(Player base) {
         if (Target == null)
             return;
-        if (Target.isRemoved() || !(Target instanceof LivingEntity l))
+        if (Target.isRemoved() || !(Target instanceof LivingEntity l)) {
+            Target = null;
             return;
+        }
         if (l.deathTime > 0)
             return;
         Minecraft mc = Minecraft.getInstance();

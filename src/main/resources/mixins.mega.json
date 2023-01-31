@@ -47,6 +47,7 @@
     "MinecraftMixin",
     "MPGMMixin",
     "ParticleManagerMixin",
+    "ScreenEffectRendererMixin",
     "ScreenMixin",
     "SGMixin",
     "SprintKeyMixin",

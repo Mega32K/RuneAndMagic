@@ -118,5 +118,7 @@
   "auto_fight_rotation" : "自动战斗 旋转",
   "auto_fight_auto_shield" : "自动战斗 自动盾牌",
   "auto_fight_teleportation_tracking" : "自动战斗 瞬移追踪",
-  "auto_fight_normal_tracking" : "自动战斗 正常追踪"
+  "auto_fight_normal_tracking" : "自动战斗 正常追踪",
+  "speed" : "飞行速度",
+  "weather" : "天气"
 }

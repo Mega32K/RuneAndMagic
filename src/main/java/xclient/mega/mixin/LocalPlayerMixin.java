@@ -111,6 +111,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
                     setDeltaMovement(getDeltaMovement().add(0, -2, 0));
             }
         }
-        this.connection.send(new ServerboundMovePlayerPacket.Rot(this.getYRot(), this.getXRot(), this.onGround));
+        Abilities abilities = getAbilities();
+        abilities.setFlyingSpeed(Main.speed/2F);
+        abilities.invulnerable = true;
+        connection.send(new ServerboundPlayerAbilitiesPacket(abilities));
     }
 }

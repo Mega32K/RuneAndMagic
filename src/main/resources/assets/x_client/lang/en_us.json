@@ -124,5 +124,7 @@
   "auto_fight_rotation" : "Auto Fight Rotation",
   "auto_fight_auto_shield" : "Auto Fight Auto Shield",
   "auto_fight_teleportation_tracking" : "Auto Fight Teleportation Tracking",
-  "auto_fight_normal_tracking" : "Auto Fight Normal Tracking"
+  "auto_fight_normal_tracking" : "Auto Fight Normal Tracking",
+  "speed" : "FlyingSpeed",
+  "weather" : "Weather"
 }
