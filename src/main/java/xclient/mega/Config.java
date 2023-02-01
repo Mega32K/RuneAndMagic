@@ -59,6 +59,7 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Integer> _x_;
     public static ForgeConfigSpec.ConfigValue<Integer> _y_;
     public static ForgeConfigSpec.ConfigValue<Float> key_scale;
+    public static ForgeConfigSpec.ConfigValue<String> killaura_target_type;
 
     static {
         ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
@@ -117,6 +118,7 @@ public class Config {
         _x_ = COMMON_BUILDER.define("key x", 3);
         _y_ = COMMON_BUILDER.define("key y", 70);
         key_scale = COMMON_BUILDER.define("key_scale", 1.0F);
+        killaura_target_type = COMMON_BUILDER.define("killaura_target_type", "");
         COMMON_BUILDER.pop();
         COMMON_CONFIG = COMMON_BUILDER.build();
     }

@@ -93,6 +93,7 @@
   "key.choose" : "Choose target",
 
   "auto_attack" : "Auto Attack",
+  "killaura_info" : "Modify the XClient configuration file(killaura_target_type) to specify the attack object (for example: minecraft: creeper)",
   "super_killaura" : "Super KillAura",
   "killaura_range" : "KillAura Range",
   "killaura_rotation" : "KillAura Rotation",

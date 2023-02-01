@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Abilities;
@@ -45,6 +46,7 @@ import xclient.mega.utils.TimeHelper;
 import xclient.mega.utils.core.AutoFightCore;
 import xclient.mega.utils.core.CameraCore;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,7 +59,7 @@ import java.util.concurrent.TimeUnit;
 @Mod(Main.ID)
 public class Main {
     public static final String ID = "x_client";
-    public static String version = "V1.2.4";
+    public static String version = "V1.2.5";
     public static boolean hasRead;
     public static String YES = "\u221a";
 
@@ -67,7 +69,7 @@ public class Main {
     public static boolean enable_display_info = false;
     public static int _x_ = 3, _y_ = 70;
     public static float key_scale = 1.0F;
-    public static float zoom = 1.0F;
+    public static String killaura_target_type = "";
 
     @ModuleValue
     public static float killaura_range = 3.8F;
@@ -441,6 +443,9 @@ public class Main {
         public static void clientTick(TickEvent.ClientTickEvent event) {
             client_ticks++;
             Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null) {
+                mc.level.setRainLevel(0F);
+            }
             LocalPlayer player = mc.player;
             Entity point = mc.crosshairPickEntity;
             if (killaura_range > 6.0F)
@@ -451,11 +456,19 @@ public class Main {
                         if (entity instanceof LivingEntity livingEntity && point != player && !livingEntity.isDeadOrDying() && !livingEntity.isInvisible() && player.distanceTo(entity) <= killaura_range && livingEntity.deathTime <= 0) {
                             if (mc.gameMode != null && ((LivingEntity) entity).hurtTime <= 0) {
                                 if (client_ticks % 2 == 0 && !killaura_attackPlayer || (!(livingEntity instanceof Player) && killaura_attackPlayer)) {
-                                    if (killaura_rotation)
-                                        for (int i=0;i<40;i++)
-                                            RotationUtil.rotationAtoB(player, livingEntity);
-                                    mc.gameMode.attack(player, entity);
-
+                                    if (getTarget() != null) {
+                                        if (entity.getType().equals(getTarget())) {
+                                            if (killaura_rotation)
+                                                for (int i = 0; i < 40; i++)
+                                                    RotationUtil.rotationAtoB(player, livingEntity);
+                                            mc.gameMode.attack(player, entity);
+                                        }
+                                    } else {
+                                        if (killaura_rotation)
+                                            for (int i = 0; i < 40; i++)
+                                                RotationUtil.rotationAtoB(player, livingEntity);
+                                        mc.gameMode.attack(player, entity);
+                                    }
                                 }
                             }
                             player.swing(InteractionHand.MAIN_HAND);
@@ -501,5 +514,13 @@ public class Main {
                 }
             }
         }
+    }
+
+    public static @Nullable EntityType<?> getTarget() {
+        killaura_target_type = Config.killaura_target_type.get();
+        if (EntityType.byString(killaura_target_type).isPresent()) {
+            return EntityType.byString(killaura_target_type).get();
+        }
+        return null;
     }
 }

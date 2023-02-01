@@ -25,6 +25,7 @@
     "AbstractWidgetMixin",
     "ButtonMixin",
     "CameraMixin",
+    "ChatMixin",
     "ClientLevelMixin",
     "EntityRenderDispatcherMixin",
     "EntityRendererMixin",

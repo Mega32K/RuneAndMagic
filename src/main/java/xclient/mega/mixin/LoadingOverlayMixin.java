@@ -24,9 +24,6 @@ import java.util.function.IntSupplier;
 public abstract class LoadingOverlayMixin extends Overlay {
     @Shadow
     @Final
-    static ResourceLocation MOJANG_STUDIOS_LOGO_LOCATION;
-    @Shadow
-    @Final
     @Mutable
     private static IntSupplier BRAND_BACKGROUND;
     @Shadow

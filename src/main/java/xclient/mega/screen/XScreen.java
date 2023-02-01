@@ -3,7 +3,9 @@ package xclient.mega.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -17,6 +19,7 @@ import xclient.mega.mod.Module;
 import xclient.mega.mod.bigmodule.ActionBmC;
 import xclient.mega.mod.bigmodule.BigModuleBase;
 import xclient.mega.mod.message.Message;
+import xclient.mega.utils.ButtonUtils;
 import xclient.mega.utils.RainbowFont;
 import xclient.mega.utils.Render2DUtil;
 import xclient.mega.utils.Vec2d;
@@ -70,6 +73,11 @@ public class XScreen extends Screen implements IScreenClick {
         click(x, y, p_94697_);
         MegaUtil.writeXCLIENT();
         return super.mouseClicked(x, y, p_94697_);
+    }
+
+    @Override
+    public void init(Minecraft p_96607_, int p_96608_, int p_96609_) {
+        super.init(p_96607_, p_96608_, p_96609_);
     }
 
     public void click(double x, double y, int code) {
@@ -179,6 +187,8 @@ public class XScreen extends Screen implements IScreenClick {
                     }
                 }
             }
+            if (configModule.sameModule(Main.SUPER_KILL_AURA))
+                minecraft.font.drawShadow(stack, I18n.get("killaura_info"), x, y+100, Color.DARK_GRAY.getRGB());
         }
         super.render(stack, mx, my, pt);
     }
@@ -199,7 +209,6 @@ public class XScreen extends Screen implements IScreenClick {
     public Component getTitle() {
         return new TextComponent("The X Screen").withStyle(ChatFormatting.BLUE);
     }
-
     @Override
     public void init() {
         MegaUtil.read();

@@ -87,6 +87,7 @@
 
   "key.choose" : "选择目标",
   "auto_attack" : "自动攻击",
+  "killaura_info" : "修改XClient配置文件(killaura_target_type)可以指定攻击对象(例如:minecraft:creeper)",
   "super_killaura" : "杀戮光环",
   "killaura_range" : "杀戮光环 范围",
   "killaura_rotation" : "杀戮光环 旋转",
