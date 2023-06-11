@@ -1,2 +1,2 @@
-# X-ClientMod Codes/源代码
-## 可自行修改添加
+# Rune&Magic 如尼文与魔法
+## 无穷无尽之魔法
